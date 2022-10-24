@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const FavItem = ({ item, style }) => {
+const FavItem = ({ item, style, onPress }) => {
   const [number, setNumber] = useState(1);
   return (
     <View style={[styles.container, style]}>
@@ -51,12 +51,12 @@ const FavItem = ({ item, style }) => {
         }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <View>
-            <Text style={[styles.text, { fontSize: 17 }]}>Product Name</Text>
+            <Text style={[styles.text, { fontSize: 17 }]}>{item.vegetable_name}</Text>
             <Text style={[styles.text, { color: colors.textGrey, fontSize: 14 }]}>
-              Product details
+              {item.type_name}
             </Text>
           </View>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={onPress}>
             <AntDesign name="heart" size={18} color={colors.danger} />
           </TouchableOpacity>
         </View>
@@ -67,7 +67,9 @@ const FavItem = ({ item, style }) => {
             justifyContent: 'space-between',
             marginTop: 15,
           }}>
-          <Text style={[styles.text, { fontSize: 16, textTransform: 'uppercase' }]}>RWF 300</Text>
+          <Text style={[styles.text, { fontSize: 16, textTransform: 'uppercase' }]}>
+            RWF {item.price}
+          </Text>
           <TouchableOpacity>
             <Text style={[styles.text, { fontSize: 14, color: colors.textGrey }]}>
               Add to basket

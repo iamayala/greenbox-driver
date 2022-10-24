@@ -16,6 +16,8 @@ import Address from '../screens/main/Address';
 import Notification from '../screens/main/Notification';
 import Orders from '../screens/main/Orders';
 import Profile from '../screens/main/Profile';
+import Help from '../screens/main/Help';
+import About from '../screens/main/About';
 
 const Stack = createStackNavigator();
 
@@ -40,6 +42,7 @@ export function SearchStackScreen() {
         headerShown: false,
       }}>
       <Stack.Screen name="Search" component={Search} />
+      <Stack.Screen name="More" component={More} />
     </Stack.Navigator>
   );
 }
@@ -77,6 +80,8 @@ export function AccountStackScreen() {
       <Stack.Screen name="Notification" component={Notification} />
       <Stack.Screen name="Orders" component={Orders} />
       <Stack.Screen name="Profile" component={Profile} />
+      <Stack.Screen name="Help" component={Help} />
+      <Stack.Screen name="About" component={About} />
     </Stack.Navigator>
   );
 }

@@ -12,4 +12,12 @@ export const emojis = {
     'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/apple/325/hundred-points_1f4af.png',
   orderCancelled:
     'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/apple/325/crying-face_1f622.png',
+  noNotifications:
+    'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/apple/325/open-mailbox-with-lowered-flag_1f4ed.png',
+  fireCracker:
+    'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/apple/325/firecracker_1f9e8.png',
+  yes: 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/apple/325/thumbs-up_1f44d.png',
+  no: 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/apple/325/thumbs-down_1f44e.png',
+  hide: 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/apple/325/see-no-evil-monkey_1f648.png',
+  tree: 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/apple/325/deciduous-tree_1f333.png',
 };

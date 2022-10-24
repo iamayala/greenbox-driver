@@ -15,6 +15,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.bold,
     fontSize: 20,
     color: colors.textDark,
+    textTransform: 'capitalize',
   },
   subheader: {
     fontFamily: fonts.medium,

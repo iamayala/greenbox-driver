@@ -18,6 +18,8 @@ import ToastMessage from '../../component/ToastMessage';
 import ProductCard from '../../component/ProductCard';
 import AddressItem from '../../component/AddressItem';
 import NotificationItem from '../../component/NotificationItem';
+import NoData from '../../component/NoData';
+import { emojis } from '../../constants/utils';
 
 const styles = StyleSheet.create({
   text: {
@@ -47,7 +49,7 @@ const styles = StyleSheet.create({
 
 function Notification({ route, navigation }) {
   const [message, setMessage] = useState(null);
-  const [location, setLocation] = useState([1, 2]);
+  const [location, setLocation] = useState([]);
 
   return (
     <AppScreen style={{ backgroundColor: colors.white, flex: 1 }}>
@@ -74,6 +76,15 @@ function Notification({ route, navigation }) {
           data={location}
           renderItem={({ item }) => {
             return <NotificationItem />;
+          }}
+          ListEmptyComponent={() => {
+            return (
+              <NoData
+                style={{ selfAlign: 'center' }}
+                label="Oops! you don't have any notifications!"
+                emoji={emojis.noNotifications}
+              />
+            );
           }}
         />
       </View>

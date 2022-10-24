@@ -10,6 +10,10 @@ import { getLocalData } from '../../utils/Helpers';
 import ToastMessage from '../../component/ToastMessage';
 import { baseURL, get } from '../../utils/Api';
 import TypeTab from '../../component/TypeTab';
+import { width } from '../../constants/dimensions';
+import { emojis } from '../../constants/utils';
+import fonts from '../../constants/fonts';
+import NoData from '../../component/NoData';
 
 function Home({ navigation }) {
   const [location, setLocation] = useState('');
@@ -17,6 +21,7 @@ function Home({ navigation }) {
   const [success, setSuccess] = useState(null);
   const [products, setProducts] = useState(null);
   const [types, setTypes] = useState(null);
+  const [fetching, setfetching] = useState(true);
 
   // fetch local storage
   useEffect(() => {
@@ -45,11 +50,16 @@ function Home({ navigation }) {
     get(`${baseURL}/vegetabletype`)
       .then((res) => {
         setTypes(res.data.data);
+        setfetching(false);
       })
       .catch((err) => {
         setError('Something went wrong!');
       });
   };
+
+  if (fetching) {
+    return <NoData label="harvesting..." emoji={emojis.tree} />;
+  }
 
   return (
     <AppScreen style={{ backgroundColor: colors.white }}>
@@ -76,59 +86,44 @@ function Home({ navigation }) {
             style={{ height: 114.99, backgroundColor: colors.primary, borderRadius: 15 }}></View>
         </View>
 
-        <View>
-          <SectionHeader
-            onPress={() => navigation.navigate('More', { products })}
-            title="Promoted"
-            link="See all"
-          />
-          <FlatList
-            nestedScrollEnabled
-            data={products}
-            horizontal
-            keyExtractor={(item) => item.vegetable_id}
-            contentContainerStyle={{ paddingHorizontal: 10 }}
-            style={{ marginVertical: 15 }}
-            showsHorizontalScrollIndicator={false}
-            renderItem={({ item }) => {
-              return (
-                <ProductCard item={item} onPress={() => navigation.navigate('Details', { item })} />
-              );
-            }}
-          />
-        </View>
-        <View>
-          <SectionHeader title="All Products" />
-          <FlatList
-            data={types}
-            horizontal
-            style={{ marginTop: 15 }}
-            contentContainerStyle={{ paddingHorizontal: 10 }}
-            renderItem={({ item }) => {
-              return <TypeTab item={item} onPress={() => {}} />;
-            }}
-          />
-        </View>
-        <FlatList
-          data={products}
-          numColumns={2}
-          horizontal={false}
-          style={{ paddingHorizontal: 10, marginTop: 15 }}
-          showsVerticalScrollIndicator={false}
-          nestedScrollEnabled
-          contentContainerStyle={{ paddingBottom: 100 }}
-          renderItem={({ item }) => {
-            return (
-              <ProductCard
-                item={item}
-                style={{
-                  marginBottom: 10,
-                  flex: 1,
+        {types?.map((child, index) => {
+          return (
+            <View key={index}>
+              <SectionHeader
+                onPress={() => navigation.navigate('More', { item: child })}
+                title={child.type_name}
+                link="See all"
+              />
+              <FlatList
+                nestedScrollEnabled
+                data={products
+                  ?.filter((item) => item.vegetable_type_id == child.vegetable_type_id)
+                  .slice(0, 5)}
+                horizontal
+                keyExtractor={(item) => item.vegetable_id}
+                contentContainerStyle={{ paddingHorizontal: 10 }}
+                style={{ marginVertical: 15 }}
+                showsHorizontalScrollIndicator={false}
+                renderItem={({ item }) => {
+                  return (
+                    <ProductCard
+                      item={item}
+                      onPress={() => navigation.navigate('Details', { item })}
+                    />
+                  );
                 }}
               />
-            );
-          }}
-        />
+            </View>
+          );
+        })}
+
+        <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
+          <Text style={{ fontFamily: fonts.medium, color: colors.textGrey }}>
+            End of the world!
+          </Text>
+          <Image source={{ uri: emojis.eyes }} style={{ height: 18, width: 18, marginLeft: 10 }} />
+        </View>
+        <View style={{ height: 100 }} />
       </ScrollView>
     </AppScreen>
   );

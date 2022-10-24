@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView, View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import AppScreen from '../../component/AppScreen';
-import { Feather } from '@expo/vector-icons';
+import { Feather, AntDesign } from '@expo/vector-icons';
 import colors from '../../constants/colors';
 import fonts from '../../constants/fonts';
 import AppButton from '../../component/AppButton';
@@ -27,17 +27,31 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.textGrey,
   },
+  view: {
+    height: 65,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 15,
+    position: 'absolute',
+    zIndex: 1,
+    top: 0,
+    left: 0,
+    right: 0,
+  },
 });
 
 function Details({ route, navigation }) {
   const { item } = route.params;
   const [number, setNumber] = useState(1);
   const [message, setMessage] = useState(null);
-  const [fav, setFav] = useState([]);
+  const [fav, setfav] = useState([]);
+  const [isfav, setisfav] = useState(null);
 
   useEffect(() => {
-    // getFav();
-  }, []);
+    getFav();
+    checkFav(item.vegetable_id);
+  });
 
   const controller = (e) => {
     if (e == 'add') {
@@ -47,8 +61,35 @@ function Details({ route, navigation }) {
     }
   };
 
+  const getFav = () => {
+    getLocalData('@FAV').then((res) => setfav(res));
+  };
+
+  const checkFav = (id) => {
+    getLocalData('@FAV').then((res) => {
+      var favitems = res.filter((item) => item.vegetable_id == id);
+      if (favitems.length > 0) {
+        setisfav(true);
+      }
+    });
+  };
+
   const addToFav = (item) => {
+    fav.push(item);
+    storeLocalData('@FAV', fav);
     setMessage(`${item.vegetable_name} was added to your favorites!`);
+    setisfav(true);
+  };
+
+  const removeFav = (e) => {
+    getLocalData('@FAV').then((res) => {
+      var favitems = res.filter((item) => item.vegetable_id !== e.vegetable_id);
+      if (favitems.length > 0) {
+        storeLocalData('@FAV', favitems);
+        setMessage(`${e.vegetable_name} was removed from your favorites!`);
+        setisfav(false);
+      }
+    });
   };
 
   const addToCart = (item) => {
@@ -58,19 +99,7 @@ function Details({ route, navigation }) {
   return (
     <AppScreen style={{ backgroundColor: colors.white }}>
       {message && <ToastMessage label={message} onPress={() => setMessage(null)} />}
-      <View
-        style={{
-          height: 65,
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          paddingHorizontal: 15,
-          position: 'absolute',
-          zIndex: 1,
-          top: 0,
-          left: 0,
-          right: 0,
-        }}>
+      <View style={styles.view}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.topBtn}>
           <Feather name="arrow-left" size={20} color={colors.iconGrey} />
         </TouchableOpacity>
@@ -101,8 +130,14 @@ function Details({ route, navigation }) {
             </Text>
             <Text style={[styles.subname, { textTransform: 'capitalize' }]}>{item.type_name}</Text>
           </View>
-          <TouchableOpacity onPress={() => addToFav(item)} style={styles.topBtn}>
-            <Feather name="heart" size={20} color={colors.iconGrey} />
+          <TouchableOpacity
+            onPress={() => (isfav ? removeFav(item) : addToFav(item))}
+            style={styles.topBtn}>
+            <AntDesign
+              name={isfav ? 'heart' : 'hearto'}
+              size={20}
+              color={!isfav ? colors.iconGrey : colors.danger}
+            />
           </TouchableOpacity>
         </View>
         <View

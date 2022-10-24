@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const AddressItem = ({ onPress, style }) => {
+const AddressItem = ({ onPress, style, item }) => {
   return (
     <TouchableOpacity onPress={onPress} style={[styles.container, { style }]}>
       <View
@@ -41,8 +41,8 @@ const AddressItem = ({ onPress, style }) => {
         <Image source={{ uri: emojis.home }} style={{ height: 20, width: 20 }} />
       </View>
       <View>
-        <Text style={styles.text}>Default Address</Text>
-        <Text style={[styles.text, { fontSize: 14, color: colors.textGrey }]}>Default Address</Text>
+        <Text style={styles.text}>{item}</Text>
+        {/* <Text style={[styles.text, { fontSize: 14, color: colors.textGrey }]}>Default Address</Text> */}
       </View>
     </TouchableOpacity>
   );

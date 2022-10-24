@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   useFonts,
   DMSans_400Regular,
@@ -6,6 +6,7 @@ import {
   DMSans_700Bold,
 } from '@expo-google-fonts/dm-sans';
 import { MainNavigation } from './src/navigation';
+import { LogBox } from 'react-native';
 
 export default function App() {
   let [fontsLoaded] = useFonts({

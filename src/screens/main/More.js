@@ -16,6 +16,10 @@ import AppButton from '../../component/AppButton';
 import { getLocalData, removeLocalData, storeLocalData } from '../../utils/Helpers';
 import ToastMessage from '../../component/ToastMessage';
 import ProductCard from '../../component/ProductCard';
+import { baseURL, get } from '../../utils/Api';
+import { width } from '../../constants/dimensions';
+import NoData from '../../component/NoData';
+import { emojis } from '../../constants/utils';
 
 const styles = StyleSheet.create({
   text: {
@@ -44,16 +48,21 @@ const styles = StyleSheet.create({
 });
 
 function More({ route, navigation }) {
-  const { products } = route.params;
-  const [number, setNumber] = useState(1);
+  const { item } = route.params;
+  const [product, setproduct] = useState([]);
   const [message, setMessage] = useState(null);
-  const [fav, setFav] = useState([]);
+  const [loading, setloading] = useState(true);
 
   useEffect(() => {
-    // getFav();
+    handleFetch(item.vegetable_type_id);
   }, []);
 
-  //   handleFetch;
+  const handleFetch = (id) => {
+    get(`${baseURL}/vegetable/category/${id}`).then((res) => {
+      setproduct(res.data.data);
+      setloading(false);
+    });
+  };
 
   return (
     <AppScreen style={{ backgroundColor: colors.white, flex: 1 }}>
@@ -70,14 +79,19 @@ function More({ route, navigation }) {
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.topBtn}>
           <Feather name="arrow-left" size={20} color={colors.iconGrey} />
         </TouchableOpacity>
-        <Text style={[styles.text, { fontSize: 18 }]}>Find Product</Text>
+        <Text style={[styles.text, { fontSize: 18, textTransform: 'capitalize' }]}>
+          {item.type_name}
+        </Text>
         <TouchableOpacity style={styles.topBtn}>
-          <Feather name="more-vertical" size={20} color={colors.iconGrey} />
+          <Feather name="more-vertical" size={20} color={colors.white} />
         </TouchableOpacity>
       </View>
+
       <FlatList
-        data={products}
+        data={product}
         numColumns={2}
+        refreshing={loading}
+        onRefresh={() => handleFetch(item.vegetable_type_id)}
         horizontal={false}
         style={{ paddingHorizontal: 10 }}
         showsVerticalScrollIndicator={false}
@@ -88,10 +102,13 @@ function More({ route, navigation }) {
               item={item}
               style={{
                 marginBottom: 10,
-                flex: 1,
+                width: width * 0.5 - 25,
               }}
             />
           );
+        }}
+        ListEmptyComponent={() => {
+          return <NoData label="" emoji={emojis.hide} />;
         }}
       />
     </AppScreen>

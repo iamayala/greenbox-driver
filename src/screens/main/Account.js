@@ -1,15 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  Keyboard,
-  FlatList,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
 import AccountItem from '../../component/AccountItem';
 import AppButton from '../../component/AppButton';
 import AppScreen from '../../component/AppScreen';
@@ -18,6 +8,9 @@ import colors from '../../constants/colors';
 import fonts from '../../constants/fonts';
 import { emojis } from '../../constants/utils';
 import { baseURL, get } from '../../utils/Api';
+import { getLocalData } from '../../utils/Helpers';
+import Modal from 'react-native-modal';
+import PromptModal from '../../component/PromptModal';
 
 const styles = StyleSheet.create({
   text: {
@@ -38,6 +31,21 @@ const styles = StyleSheet.create({
 });
 
 function Account({ navigation }) {
+  const [profile, setProfile] = useState(null);
+  const [logoutmodal, setlogoutmodal] = useState(false);
+  const [loading, setloading] = useState(false);
+
+  useEffect(() => {
+    getLocalData('@USERDATA').then((res) => {
+      // console.log(res[0]);
+      setProfile(res[0]);
+    });
+  }, []);
+
+  const handleLogout = () => {
+    setloading(true);
+  };
+
   return (
     <AppScreen style={{ backgroundColor: colors.white, flex: 1 }}>
       <View
@@ -48,6 +56,16 @@ function Account({ navigation }) {
         }}>
         <Text style={[styles.text, { fontSize: 18 }]}>Account</Text>
       </View>
+      <Modal isVisible={logoutmodal}>
+        <PromptModal
+          text="You are about to logout of your account. Please confirm this action."
+          yes={() => {
+            setlogoutmodal(false);
+            handleLogout();
+          }}
+          no={() => setlogoutmodal(false)}
+        />
+      </Modal>
       <ScrollView
         contentContainerStyle={{ paddingBottom: 100, paddingHorizontal: 20 }}
         showsVerticalScrollIndicator={false}>
@@ -73,35 +91,45 @@ function Account({ navigation }) {
             />
           </View>
           <View style={{ marginHorizontal: 15, flex: 1 }}>
-            <Text style={[styles.text, { fontSize: 17 }]}>Names</Text>
+            <Text style={[styles.text, { fontSize: 17, textTransform: 'capitalize' }]}>
+              {profile?.customer_username}
+            </Text>
             <Text
               style={[
                 styles.text,
                 { fontSize: 16, color: colors.textGrey, fontFamily: fonts.regular },
               ]}>
-              Names
+              {profile?.customer_phone_number}
             </Text>
           </View>
-          <TouchableOpacity onPress={() => navigation.navigate('Profile')} style={styles.topBtn}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Profile')}
+            style={[styles.topBtn, { display: 'none' }]}>
             <Feather name="edit-2" size={18} color={colors.iconDark} />
           </TouchableOpacity>
         </View>
         <AccountItem icon="box" label="orders" onPress={() => navigation.navigate('Orders')} />
         {/* <AccountItem icon="smile" label="my details" /> */}
-        <AccountItem icon="credit-card" label="payment methods" />
+        {/* <AccountItem icon="credit-card" label="payment methods" /> */}
         <AccountItem
           icon="map-pin"
           label="delivery address"
-          onPress={() => navigation.navigate('Address')}
+          onPress={() => navigation.navigate('Address', { profile: profile })}
         />
         <AccountItem
           icon="bell"
           label="notifications"
           onPress={() => navigation.navigate('Notification')}
+          badge={2}
         />
-        <AccountItem icon="help-circle" label="help" />
-        <AccountItem icon="info" label="about" />
-        <AppButton label="Logout" style={{ backgroundColor: colors.danger, marginTop: 45 }} />
+        <AccountItem icon="help-circle" label="help" onPress={() => navigation.navigate('Help')} />
+        <AccountItem icon="info" label="about" onPress={() => navigation.navigate('About')} />
+        <AppButton
+          label="Logout"
+          style={{ backgroundColor: colors.danger, marginTop: 45 }}
+          onPress={loading ? () => {} : () => setlogoutmodal(true)}
+          loading={loading}
+        />
       </ScrollView>
     </AppScreen>
   );

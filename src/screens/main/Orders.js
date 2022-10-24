@@ -20,6 +20,7 @@ import AddressItem from '../../component/AddressItem';
 import NotificationItem from '../../component/NotificationItem';
 import OrderCard from '../../component/OrderCard';
 import { emojis } from '../../constants/utils';
+import NoData from '../../component/NoData';
 
 const styles = StyleSheet.create({
   text: {
@@ -58,7 +59,7 @@ const styles = StyleSheet.create({
 
 function Orders({ route, navigation }) {
   const [message, setMessage] = useState(null);
-  const [location, setLocation] = useState([1, 2]);
+  const [location, setLocation] = useState([]);
   const [tab, setTab] = useState(1);
 
   const Tab = ({ label, onPress, active }) => {
@@ -118,6 +119,22 @@ function Orders({ route, navigation }) {
                     ? emojis.orderComplete
                     : tab == 3
                     ? emojis.orderCancelled
+                    : ''
+                }
+              />
+            );
+          }}
+          ListEmptyComponent={() => {
+            return (
+              <NoData
+                emoji={emojis.hide}
+                label={
+                  tab == 1
+                    ? 'Oops! No active orders.'
+                    : tab == 2
+                    ? 'Oops! No completed orders.'
+                    : tab == 3
+                    ? 'Wow! No cancelled orders.'
                     : ''
                 }
               />

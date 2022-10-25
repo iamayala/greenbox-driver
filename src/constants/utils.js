@@ -21,3 +21,11 @@ export const emojis = {
   hide: 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/apple/325/see-no-evil-monkey_1f648.png',
   tree: 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/apple/325/deciduous-tree_1f333.png',
 };
+
+export const formatPrice = (price) => {
+  if (price == undefined || price == 'undefined') {
+    return 0;
+  } else {
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+};

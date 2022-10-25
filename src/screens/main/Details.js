@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { Component } from 'react';
 import { ScrollView, View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import AppScreen from '../../component/AppScreen';
 import { Feather, AntDesign } from '@expo/vector-icons';
@@ -41,145 +41,212 @@ const styles = StyleSheet.create({
   },
 });
 
-function Details({ route, navigation }) {
-  const { item } = route.params;
-  const [number, setNumber] = useState(1);
-  const [message, setMessage] = useState(null);
-  const [fav, setfav] = useState([]);
-  const [isfav, setisfav] = useState(null);
+export class Details extends Component {
+  constructor(props) {
+    super(props);
 
-  useEffect(() => {
-    getFav();
-    checkFav(item.vegetable_id);
-  });
+    this.state = {
+      message: null,
+      item: null,
+      number: 1,
+      fav: [],
+      isfav: null,
+      cart: [],
+      isincart: null,
+    };
+  }
 
-  const controller = (e) => {
+  componentDidMount() {
+    const { item } = this.props.route.params;
+    this.setState({ item });
+    this.handleCheckFav(item.vegetable_id);
+
+    this._unsubscribe = this.props.navigation.addListener('focus', () => {
+      const { item } = this.props.route.params;
+      this.setState({ item });
+      this.handleCheckFav(item.vegetable_id);
+      this.handleCheckCart(item.vegetable_id);
+    });
+  }
+
+  componentWillUnmount() {
+    this._unsubscribe();
+  }
+
+  handleCheckFav = (id) => {
+    getLocalData('@FAV').then((res) => {
+      this.setState({ fav: res });
+      var likedStores = res.filter((item) => item.vegetable_id == id);
+      if (likedStores.length > 0) {
+        this.setState({ isfav: true });
+      }
+    });
+  };
+
+  addToFav = (item) => {
+    var StorageFav = this.state.fav;
+    StorageFav.push(item);
+    storeLocalData('@FAV', StorageFav).then(() => {
+      this.setState({ fav: StorageFav, isfav: true });
+      this.showMessage('The item was add to your favorite!');
+    });
+  };
+
+  rmvToFav = (id) => {
+    var rmvd = this.state.fav.filter((item) => item.vegetable_id != id);
+    storeLocalData('@FAV', rmvd).then(() => {
+      this.setState({ fav: rmvd, isfav: false });
+      this.showMessage('The item was removed from your favorite!');
+    });
+  };
+
+  showMessage = (message) => {
+    this.setState({ message: message });
+    setTimeout(() => {
+      this.setState({ message: null });
+    }, 2000);
+  };
+
+  controller = (e) => {
+    var no = this.state.number;
     if (e == 'add') {
-      setNumber(number + 1);
-    } else if (e == 'remove' && number > 1) {
-      setNumber(number - 1);
+      this.setState({ number: no + 1 });
+    } else if (e == 'remove' && this.state.number > 1) {
+      this.setState({ number: no - 1 });
     }
   };
 
-  const getFav = () => {
-    getLocalData('@FAV').then((res) => setfav(res));
-  };
-
-  const checkFav = (id) => {
-    getLocalData('@FAV').then((res) => {
-      var favitems = res.filter((item) => item.vegetable_id == id);
-      if (favitems.length > 0) {
-        setisfav(true);
+  handleCheckCart = (id) => {
+    getLocalData('@CART').then((res) => {
+      this.setState({ cart: res });
+      var Cart = res.filter((item) => item.vegetable_id == id);
+      if (Cart.length > 0) {
+        this.setState({ isincart: true });
       }
     });
   };
 
-  const addToFav = (item) => {
-    fav.push(item);
-    storeLocalData('@FAV', fav);
-    setMessage(`${item.vegetable_name} was added to your favorites!`);
-    setisfav(true);
-  };
-
-  const removeFav = (e) => {
-    getLocalData('@FAV').then((res) => {
-      var favitems = res.filter((item) => item.vegetable_id !== e.vegetable_id);
-      if (favitems.length > 0) {
-        storeLocalData('@FAV', favitems);
-        setMessage(`${e.vegetable_name} was removed from your favorites!`);
-        setisfav(false);
-      }
+  addToCart = (item) => {
+    var StorageCart = this.state.cart;
+    var data = { ...item, quantity: this.state.number };
+    StorageCart.push(data);
+    storeLocalData('@CART', StorageCart).then(() => {
+      this.setState({ cart: StorageCart, isincart: true });
+      this.showMessage(`${item.vegetable_name} was added to your basket!`);
     });
   };
 
-  const addToCart = (item) => {
-    setMessage(`${item.vegetable_name} was added to your basket!`);
+  removeToCart = (item) => {
+    var StorageCart = this.state.cart;
+    var i;
+    for (i = 0; i < StorageCart.length; i++) {
+      if (StorageCart[i].vegetable_id == item.vegetable_id) {
+        var index = StorageCart.indexOf(item);
+        StorageCart.splice(index, 1);
+      }
+    }
+    storeLocalData('@CART', StorageCart).then(() => {
+      this.setState({ cart: StorageCart, isincart: false });
+      this.showMessage(`${item.vegetable_name} was removed from your basket!`);
+    });
   };
 
-  return (
-    <AppScreen style={{ backgroundColor: colors.white }}>
-      {message && <ToastMessage label={message} onPress={() => setMessage(null)} />}
-      <View style={styles.view}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.topBtn}>
-          <Feather name="arrow-left" size={20} color={colors.iconGrey} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.topBtn}>
-          <Feather name="share" size={20} color={colors.iconGrey} />
-        </TouchableOpacity>
-      </View>
-      <ScrollView>
-        <Image
-          source={{
-            uri: item.vegetable_image,
-          }}
-          style={{
-            height: 351.44,
-          }}
-        />
+  render() {
+    const { item, isfav, number, message, isincart } = this.state;
+    const { navigation } = this.props;
 
-        <View
-          style={{
-            marginHorizontal: 15,
-            marginVertical: 10,
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-          }}>
-          <View>
-            <Text style={[styles.name, { textTransform: 'capitalize' }]}>
-              {item.vegetable_name}
-            </Text>
-            <Text style={[styles.subname, { textTransform: 'capitalize' }]}>{item.type_name}</Text>
-          </View>
-          <TouchableOpacity
-            onPress={() => (isfav ? removeFav(item) : addToFav(item))}
-            style={styles.topBtn}>
-            <AntDesign
-              name={isfav ? 'heart' : 'hearto'}
-              size={20}
-              color={!isfav ? colors.iconGrey : colors.danger}
-            />
+    return (
+      <AppScreen style={{ backgroundColor: colors.white }}>
+        {this.state.message && (
+          <ToastMessage label={message} onPress={() => this.setState({ message: null })} />
+        )}
+        <View style={styles.view}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.topBtn}>
+            <Feather name="arrow-left" size={20} color={colors.iconGrey} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.topBtn}>
+            <Feather name="share" size={20} color={colors.iconGrey} />
           </TouchableOpacity>
         </View>
-        <View
-          style={{
-            marginHorizontal: 15,
-            justifyContent: 'space-between',
-            flexDirection: 'row',
-            marginVertical: 10,
-          }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <TouchableOpacity onPress={() => controller('remove')} style={styles.topBtn}>
-              <Feather name="minus" size={18} color={colors.iconGrey} />
-            </TouchableOpacity>
-            <View
-              style={[
-                styles.topBtn,
-                {
-                  borderColor: colors.backgroundGrey,
-                  borderWidth: 1,
-                  backgroundColor: 'transparent',
-                },
-              ]}>
-              <Text style={{ fontFamily: fonts.medium }}>{number}</Text>
+        <ScrollView>
+          <Image
+            source={{
+              uri: item?.vegetable_image,
+            }}
+            style={{
+              height: 351.44,
+            }}
+          />
+
+          <View
+            style={{
+              marginHorizontal: 15,
+              marginVertical: 10,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}>
+            <View>
+              <Text style={[styles.name, { textTransform: 'capitalize' }]}>
+                {item?.vegetable_name}
+              </Text>
+              <Text style={[styles.subname, { textTransform: 'capitalize' }]}>
+                {item?.type_name}
+              </Text>
             </View>
-            <TouchableOpacity onPress={() => controller('add')} style={styles.topBtn}>
-              <Feather name="plus" size={18} color={colors.primary} />
+            <TouchableOpacity
+              onPress={() => (isfav ? this.rmvToFav(item.vegetable_id) : this.addToFav(item))}
+              style={styles.topBtn}>
+              <AntDesign
+                name={isfav ? 'heart' : 'hearto'}
+                size={20}
+                color={isfav ? colors.danger : colors.iconGrey}
+              />
             </TouchableOpacity>
           </View>
-          <Text style={[styles.name, { fontSize: 20 }]}>RWF {item.price}</Text>
-        </View>
-        <View style={{ marginHorizontal: 15, marginVertical: 15, height: 120 }}>
-          <Text style={[styles.name, { fontSize: 17 }]}>Product Details</Text>
-          <Text style={[styles.subname, { fontSize: 16 }]}>{item.description}</Text>
-        </View>
-        <AppButton
-          label="Add to Basket"
-          style={{ marginHorizontal: 15 }}
-          onPress={() => addToCart(item)}
-        />
-      </ScrollView>
-    </AppScreen>
-  );
+          <View
+            style={{
+              marginHorizontal: 15,
+              justifyContent: 'space-between',
+              flexDirection: 'row',
+              marginVertical: 10,
+            }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <TouchableOpacity onPress={() => this.controller('remove')} style={styles.topBtn}>
+                <Feather name="minus" size={18} color={colors.iconGrey} />
+              </TouchableOpacity>
+              <View
+                style={[
+                  styles.topBtn,
+                  {
+                    borderColor: colors.backgroundGrey,
+                    borderWidth: 1,
+                    backgroundColor: 'transparent',
+                  },
+                ]}>
+                <Text style={{ fontFamily: fonts.medium }}>{number}</Text>
+              </View>
+              <TouchableOpacity onPress={() => this.controller('add')} style={styles.topBtn}>
+                <Feather name="plus" size={18} color={colors.primary} />
+              </TouchableOpacity>
+            </View>
+            <Text style={[styles.name, { fontSize: 20 }]}>RWF {item?.price * number}</Text>
+          </View>
+          <View style={{ marginHorizontal: 15, marginVertical: 15, height: 120 }}>
+            <Text style={[styles.name, { fontSize: 17 }]}>Product Details</Text>
+            <Text style={[styles.subname, { fontSize: 16 }]}>{item?.description}</Text>
+          </View>
+          <AppButton
+            label={isincart ? 'Remove from basket' : 'Add to Basket'}
+            style={{
+              marginHorizontal: 15,
+              backgroundColor: isincart ? colors.danger : colors.primary,
+            }}
+            onPress={() => (isincart ? this.removeToCart(item) : this.addToCart(item))}
+          />
+        </ScrollView>
+      </AppScreen>
+    );
+  }
 }
 
 export default Details;

@@ -7,7 +7,7 @@ import { Feather } from '@expo/vector-icons';
 
 const styles = StyleSheet.create({
   card: {
-    height: 248.51,
+    height: 238.51,
     width: 173.32,
     borderRadius: 15,
     borderWidth: 1,
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const ProductCard = ({ item, onPress, style }) => {
+const ProductCard = ({ item, onPress, style, checked }) => {
   return (
     <TouchableOpacity onPress={onPress} style={[styles.card, style]}>
       <Image
@@ -57,10 +57,19 @@ const ProductCard = ({ item, onPress, style }) => {
           1 {item?.unit_short}
         </Text>
         <View
-          style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          style={{
+            flexDirection: 'row',
+            height: 45.67,
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}>
           <Text style={styles.price}>RWF {item?.price}</Text>
-          <TouchableOpacity style={styles.button}>
-            <Feather name="plus" size={24} color={colors.white} />
+          <TouchableOpacity
+            style={[
+              styles.button,
+              { display: 'none', backgroundColor: checked ? colors.danger : colors.primary },
+            ]}>
+            <Feather name={checked ? 'x' : 'plus'} size={24} color={colors.white} />
           </TouchableOpacity>
         </View>
       </View>

@@ -18,6 +18,7 @@ import Orders from '../screens/main/Orders';
 import Profile from '../screens/main/Profile';
 import Help from '../screens/main/Help';
 import About from '../screens/main/About';
+import Checkout from '../screens/main/Checkout';
 
 const Stack = createStackNavigator();
 
@@ -52,8 +53,10 @@ export function CartStackScreen() {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
+        gestureEnabled: false,
       }}>
       <Stack.Screen name="Cart" component={Cart} />
+      <Stack.Screen name="Checkout" component={Checkout} />
     </Stack.Navigator>
   );
 }

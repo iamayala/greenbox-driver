@@ -24,9 +24,18 @@ const styles = StyleSheet.create({
   },
 });
 
-const AddressItem = ({ onPress, style, item }) => {
+const AddressItem = ({ onPress, style, item, selected, emoji }) => {
   return (
-    <TouchableOpacity onPress={onPress} style={[styles.container, { style }]}>
+    <TouchableOpacity
+      onPress={onPress}
+      style={[
+        styles.container,
+        style,
+        {
+          borderWidth: selected ? 1.5 : 1,
+          color: selected ? colors.primary : colors.borderGrey,
+        },
+      ]}>
       <View
         style={{
           height: 40,
@@ -38,7 +47,10 @@ const AddressItem = ({ onPress, style, item }) => {
           alignItems: 'center',
           marginRight: 15,
         }}>
-        <Image source={{ uri: emojis.home }} style={{ height: 20, width: 20 }} />
+        <Image
+          source={{ uri: emoji == undefined ? emojis.home : emoji }}
+          style={{ height: emoji == undefined ? 20 : 40, width: emoji == undefined ? 20 : 40 }}
+        />
       </View>
       <View>
         <Text style={styles.text}>{item}</Text>

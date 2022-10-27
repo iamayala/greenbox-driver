@@ -65,7 +65,7 @@ export const MainTabNavigation = () => {
       <Tab.Screen
         name="CartStackScreen"
         component={CartStackScreen}
-        options={{
+        options={({ route }) => ({
           tabBarIcon: ({ focused }) => (
             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
               <Feather
@@ -75,7 +75,15 @@ export const MainTabNavigation = () => {
               />
             </View>
           ),
-        }}
+          tabBarStyle: ((route) => {
+            const routeName = getFocusedRouteNameFromRoute(route) ?? '';
+            // console.log(routeName);
+            if (routeName == 'Checkout') {
+              return { display: 'none' };
+            }
+            return styles.tabBarStyle;
+          })(route),
+        })}
       />
 
       <Tab.Screen

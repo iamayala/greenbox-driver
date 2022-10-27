@@ -3,7 +3,7 @@ import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View, Image } fr
 import colors from '../constants/colors';
 import fonts from '../constants/fonts';
 import { Feather } from '@expo/vector-icons';
-import { emojis } from '../constants/utils';
+import { emojis, formatDate } from '../constants/utils';
 
 const styles = StyleSheet.create({
   container: {
@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const OrderCard = ({ onPress, style, emoji }) => {
+const OrderCard = ({ onPress, style, emoji, item }) => {
   return (
     <TouchableOpacity onPress={onPress} style={[styles.container, { style }]}>
       <View
@@ -45,31 +45,36 @@ const OrderCard = ({ onPress, style, emoji }) => {
       <View style={{ flex: 1 }}>
         <View
           style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Text style={styles.text}>Cheese and more...</Text>
+          <Text style={[styles.text, { flex: 1, textTransform: 'none' }]} numberOfLines={1}>
+            #{item.order_id}: {item.basket[0].vegetable_name}
+            {item.basket.length > 1 && ', ...'}
+          </Text>
           <Text
             style={[
               styles.text,
-              { fontSize: 12, color: colors.textGrey, textTransform: 'uppercase' },
+              { fontSize: 12, color: colors.textGrey, textTransform: 'capitalize' },
             ]}>
-            ID: 124039242
+            {formatDate(item.placed_on)}
           </Text>
         </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5 }}>
           <View
             style={{
               flex: 1,
             }}>
             <Text style={[styles.text, { fontSize: 14, color: colors.textGrey }]}>Status</Text>
-            <Text style={[styles.text, { fontSize: 14, color: colors.orange }]}>Accepted</Text>
+            <Text style={[styles.text, { fontSize: 14, color: colors.orange }]}>
+              {item.order_status == 1 ? 'Pending' : item.order_status == 2 ? 'Processing' : null}
+            </Text>
           </View>
           <View
             style={{
-              flex: 1,
+              alignItems: 'flex-end',
             }}>
             <Text style={[styles.text, { fontSize: 14, color: colors.textGrey }]}>
               Est. Arrival
             </Text>
-            <Text style={[styles.text, { fontSize: 14, color: colors.textDark }]}>10 min</Text>
+            <Text style={[styles.text, { fontSize: 14, color: colors.textDark }]}>30 min.</Text>
           </View>
         </View>
       </View>

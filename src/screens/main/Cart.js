@@ -1,15 +1,25 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Modal } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  Modal,
+  FlatList,
+} from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import AppButton from '../../component/AppButton';
 import AppScreen from '../../component/AppScreen';
 import NoData from '../../component/NoData';
 import colors from '../../constants/colors';
 import fonts from '../../constants/fonts';
-import { emojis, formatPrice } from '../../constants/utils';
+import { emojis, formatDate, formatPrice } from '../../constants/utils';
 import { baseURL, get } from '../../utils/Api';
 import { getLocalData, storeLocalData } from '../../utils/Helpers';
 import PromptModal from '../../component/PromptModal';
+import RBSheet from 'react-native-raw-bottom-sheet';
 
 const styles = StyleSheet.create({
   text: {
@@ -34,6 +44,46 @@ const styles = StyleSheet.create({
   },
 });
 
+class Amount extends Component {
+  render() {
+    return (
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          marginVertical: 10,
+        }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Text
+            style={[
+              styles.text,
+              { fontSize: 16, color: colors.textGrey, fontFamily: fonts.medium },
+            ]}>
+            {this.props.title}
+          </Text>
+          {this.props.coupon && (
+            <TouchableOpacity onPress={this.props.onPress}>
+              <Text
+                style={{
+                  fontFamily: fonts.medium,
+                  textDecorationLine: 'underline',
+                  color: colors.primary,
+                  fontSize: 13,
+                  marginLeft: 10,
+                }}>
+                Add Coupon
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+        <Text style={[styles.text, { fontSize: 16 }]}>
+          {this.props.coupon ? `- ` : ``}RWF {this.props.amount}
+        </Text>
+      </View>
+    );
+  }
+}
+
 export class Cart extends Component {
   constructor(props) {
     super(props);
@@ -42,11 +92,14 @@ export class Cart extends Component {
       cart: [],
       selected: null,
       modal: false,
+      coupons: [],
+      discount: 0,
     };
   }
 
   componentDidMount() {
     this.handleFetchCart();
+    this.handleFetchVouchers();
 
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       this.handleFetchCart();
@@ -56,6 +109,12 @@ export class Cart extends Component {
   componentWillUnmount() {
     this._unsubscribe();
   }
+
+  handleFetchVouchers = () => {
+    get(`${baseURL}/voucher`).then((res) => {
+      this.setState({ coupons: res.data.data });
+    });
+  };
 
   handleFetchCart = () => {
     getLocalData('@CART').then((res) => {
@@ -95,7 +154,8 @@ export class Cart extends Component {
   };
 
   render() {
-    const { modal, selected, cart } = this.state;
+    const { modal, selected, cart, coupons, discount } = this.state;
+    const { navigation } = this.props;
 
     var tempCart = cart;
     var sumPrice = 0;
@@ -216,21 +276,95 @@ export class Cart extends Component {
 
           {this.state.cart.length > 0 && (
             <View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  marginVertical: 15,
-                }}>
-                <Text style={[styles.text, { fontSize: 18, color: colors.textGrey }]}>
-                  Subtotal
-                </Text>
-                <Text style={[styles.text, { fontSize: 18 }]}>RWF {formatPrice(sumPrice)}</Text>
-              </View>
-              <AppButton label="Go to checkout" />
+              <Amount amount={formatPrice(sumPrice)} title="Subtotal" />
+              <Amount amount={formatPrice(1500)} title="Delivery Fee" />
+              <Amount
+                amount={formatPrice((sumPrice * discount) / 100)}
+                title="Discount"
+                coupon={true}
+                onPress={() => this.RBSheet.open()}
+              />
+              <Amount amount={formatPrice(sumPrice * (1 - discount / 100) + 1500)} title="Total" />
+              <AppButton
+                label="Go to checkout"
+                onPress={() => navigation.navigate('Checkout', { sumPrice, discount, cart })}
+              />
             </View>
           )}
         </ScrollView>
+
+        <RBSheet
+          ref={(ref) => {
+            this.RBSheet = ref;
+          }}
+          animationType="slide"
+          openDuration={180}
+          customStyles={{
+            container: {
+              flex: 1,
+            },
+          }}>
+          <View>
+            <Text
+              style={{
+                textAlign: 'center',
+                fontFamily: fonts.bold,
+                fontSize: 17,
+                paddingVertical: 15,
+              }}>
+              Coupons
+            </Text>
+            <FlatList
+              data={coupons}
+              contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 100 }}
+              renderItem={({ item }) => {
+                return (
+                  <TouchableOpacity
+                    onPress={() => {
+                      this.setState({ discount: item.discount_amount });
+                      this.RBSheet.close();
+                    }}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      paddingVertical: 15,
+                    }}>
+                    <Image source={{ uri: emojis.free }} style={{ height: 35, width: 35 }} />
+                    <View style={{ marginLeft: 20, flex: 1, marginRight: 10 }}>
+                      <Text style={[styles.text, { fontSize: 16 }]}>{item.voucher_name}</Text>
+                      <Text
+                        style={[
+                          styles.text,
+                          { fontSize: 12, fontFamily: fonts.medium, color: colors.textGrey },
+                        ]}>
+                        Valid Until: {formatDate(item.expires_at)}
+                      </Text>
+                    </View>
+                    <View
+                      style={{
+                        backgroundColor: colors.lightGreen,
+                        paddingHorizontal: 15,
+                        height: 25,
+                        borderRadius: 30,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}>
+                      <Text
+                        style={{
+                          fontFamily: fonts.medium,
+                          color: colors.textDark,
+                          fontSize: 11,
+                        }}>
+                        Use Coupon
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                );
+              }}
+            />
+            <View style={{ height: 50 }} />
+          </View>
+        </RBSheet>
       </AppScreen>
     );
   }

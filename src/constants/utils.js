@@ -20,6 +20,13 @@ export const emojis = {
   no: 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/apple/325/thumbs-down_1f44e.png',
   hide: 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/apple/325/see-no-evil-monkey_1f648.png',
   tree: 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/apple/325/deciduous-tree_1f333.png',
+  free: 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/apple/325/money-with-wings_1f4b8.png',
+  partyingFace:
+    'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/apple/325/partying-face_1f973.png',
+  momoLogo:
+    'https://www.gsma.com/mobilefordevelopment/wp-content/uploads/2020/12/MTN-Rwanda-MoMo-Logo-284x300.jpg',
+  confetti:
+    'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/apple/325/confetti-ball_1f38a.png',
 };
 
 export const formatPrice = (price) => {
@@ -28,4 +35,36 @@ export const formatPrice = (price) => {
   } else {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
+};
+
+export const formatDate = (str) => {
+  var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  var d = new Date(str);
+  var dayName = days[d.getDay()];
+
+  let monthNames = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+
+  var month = monthNames[d.getMonth()];
+
+  let day = d.getDate();
+  let year = d.getFullYear();
+
+  return `${dayName}, ${month} ${day} ${year}`;
+};
+
+export const jsonparsed = (string) => {
+  return JSON.parse(string);
 };

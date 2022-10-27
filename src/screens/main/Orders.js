@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { Component } from 'react';
 import {
   ScrollView,
   View,
@@ -21,6 +21,7 @@ import NotificationItem from '../../component/NotificationItem';
 import OrderCard from '../../component/OrderCard';
 import { emojis } from '../../constants/utils';
 import NoData from '../../component/NoData';
+import { baseURL, get } from '../../utils/Api';
 
 const styles = StyleSheet.create({
   text: {
@@ -57,93 +58,145 @@ const styles = StyleSheet.create({
   },
 });
 
-function Orders({ route, navigation }) {
-  const [message, setMessage] = useState(null);
-  const [location, setLocation] = useState([]);
-  const [tab, setTab] = useState(1);
-
-  const Tab = ({ label, onPress, active }) => {
+class Tab extends Component {
+  render() {
     return (
       <TouchableOpacity
-        onPress={onPress}
-        style={[styles.tab, { backgroundColor: active ? colors.primary : colors.borderGrey }]}>
+        onPress={this.props.onPress}
+        style={[
+          styles.tab,
+          { backgroundColor: this.props.active ? colors.primary : colors.borderGrey },
+        ]}>
         <Text
-          style={[styles.name, { fontSize: 15, color: active ? colors.white : colors.textDark }]}>
-          {label}
+          style={[
+            styles.name,
+            { fontSize: 15, color: this.props.active ? colors.white : colors.textDark },
+          ]}>
+          {this.props.label}
         </Text>
       </TouchableOpacity>
     );
+  }
+}
+
+export class Orders extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      message: null,
+      orders: [],
+      tab: 1,
+      customer_id: null,
+      loading: false,
+    };
+  }
+
+  componentDidMount() {
+    const { customer_id } = this.props.route.params;
+    this.setState({ customer_id });
+    this.handleFetchOrders(customer_id);
+  }
+
+  handleFetchOrders = (customer_id) => {
+    get(`${baseURL}/order/${customer_id}`)
+      .then((res) => {
+        var result = res.data.data;
+        for (const i in result) {
+          result[i] = { ...result[i], basket: JSON.parse(result[i].basket) };
+        }
+        this.setState({ orders: result });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
-  return (
-    <AppScreen style={{ backgroundColor: colors.white, flex: 1 }}>
-      {message && <ToastMessage label={message} onPress={() => setMessage(null)} />}
-      <View
-        style={{
-          height: 65,
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          paddingHorizontal: 15,
-          backgroundColor: colors.white,
-        }}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.topBtn}>
-          <Feather name="arrow-left" size={20} color={colors.iconGrey} />
-        </TouchableOpacity>
-        <Text style={[styles.text, { fontSize: 18 }]}>Orders</Text>
-        <TouchableOpacity style={styles.topBtn}>
-          <Feather name="more-vertical" size={20} color={colors.white} />
-        </TouchableOpacity>
-      </View>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          paddingHorizontal: 15,
-          marginBottom: 10,
-        }}>
-        <Tab label="Active" active={tab == 1} onPress={() => setTab(1)} />
-        <Tab label="Completed" active={tab == 2} onPress={() => setTab(2)} />
-        <Tab label="Cancelled" active={tab == 3} onPress={() => setTab(3)} />
-      </View>
-      <View style={{ marginBottom: 10, flex: 1 }}>
-        <FlatList
-          data={location}
-          renderItem={({ item }) => {
-            return (
-              <OrderCard
-                emoji={
-                  tab == 1
-                    ? emojis.orderActive
-                    : tab == 2
-                    ? emojis.orderComplete
-                    : tab == 3
-                    ? emojis.orderCancelled
-                    : ''
-                }
-              />
-            );
-          }}
-          ListEmptyComponent={() => {
-            return (
-              <NoData
-                emoji={emojis.hide}
-                label={
-                  tab == 1
-                    ? 'Oops! No active orders.'
-                    : tab == 2
-                    ? 'Oops! No completed orders.'
-                    : tab == 3
-                    ? 'Wow! No cancelled orders.'
-                    : ''
-                }
-              />
-            );
-          }}
-        />
-      </View>
-    </AppScreen>
-  );
+  render() {
+    const { message, tab, orders } = this.state;
+    const { navigation } = this.props;
+
+    return (
+      <AppScreen style={{ backgroundColor: colors.white, flex: 1 }}>
+        {message && <ToastMessage label={message} onPress={() => setMessage(null)} />}
+        <View
+          style={{
+            height: 65,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingHorizontal: 15,
+            backgroundColor: colors.white,
+          }}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.topBtn}>
+            <Feather name="arrow-left" size={20} color={colors.iconGrey} />
+          </TouchableOpacity>
+          <Text style={[styles.text, { fontSize: 18 }]}>Orders</Text>
+          <TouchableOpacity style={styles.topBtn}>
+            <Feather name="more-vertical" size={20} color={colors.white} />
+          </TouchableOpacity>
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: 15,
+            marginBottom: 10,
+          }}>
+          <Tab label="Active" active={tab == 1} onPress={() => this.setState({ tab: 1 })} />
+          <Tab label="Completed" active={tab == 2} onPress={() => this.setState({ tab: 2 })} />
+          <Tab label="Cancelled" active={tab == 3} onPress={() => this.setState({ tab: 3 })} />
+        </View>
+        <View style={{ marginBottom: 10, flex: 1 }}>
+          <FlatList
+            refreshing={this.state.loading}
+            onRefresh={() => this.handleFetchOrders(this.state.customer_id)}
+            data={
+              tab == 1
+                ? orders.filter((item) => item.order_status == 1 || item.order_status == 2)
+                : tab == 2
+                ? orders.filter((item) => item.order_status == 3)
+                : tab == 3
+                ? orders.filter((item) => item.order_status == 4)
+                : null
+            }
+            renderItem={({ item }) => {
+              return (
+                <OrderCard
+                  emoji={
+                    tab == 1
+                      ? emojis.orderActive
+                      : tab == 2
+                      ? emojis.orderComplete
+                      : tab == 3
+                      ? emojis.orderCancelled
+                      : ''
+                  }
+                  item={item}
+                />
+              );
+            }}
+            ListEmptyComponent={() => {
+              return (
+                <NoData
+                  emoji={emojis.hide}
+                  label={
+                    tab == 1
+                      ? 'Oops! No active orders.'
+                      : tab == 2
+                      ? 'Oops! No completed orders.'
+                      : tab == 3
+                      ? 'Wow! No cancelled orders.'
+                      : ''
+                  }
+                />
+              );
+            }}
+          />
+        </View>
+      </AppScreen>
+    );
+  }
 }
 
 export default Orders;

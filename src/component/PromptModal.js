@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     right: 0,
     left: 0,
     backgroundColor: colors.textDark,
-    opacity: 0.5,
+    opacity: 0,
   },
 });
 

@@ -108,7 +108,11 @@ function Account({ navigation }) {
             <Feather name="edit-2" size={18} color={colors.iconDark} />
           </TouchableOpacity>
         </View>
-        <AccountItem icon="box" label="orders" onPress={() => navigation.navigate('Orders')} />
+        <AccountItem
+          icon="box"
+          label="orders"
+          onPress={() => navigation.navigate('Orders', { customer_id: profile.customer_id })}
+        />
         {/* <AccountItem icon="smile" label="my details" /> */}
         {/* <AccountItem icon="credit-card" label="payment methods" /> */}
         <AccountItem

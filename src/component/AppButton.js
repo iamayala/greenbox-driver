@@ -23,14 +23,12 @@ const styles = StyleSheet.create({
 
 const AppButton = ({ onPress, label, style, loading = false }) => {
   return (
-    <TouchableOpacity onPress={onPress}>
-      <View style={[styles.container, style]}>
-        {loading ? (
-          <ActivityIndicator size="small" color="#fff" />
-        ) : (
-          <Text style={styles.text}>{label}</Text>
-        )}
-      </View>
+    <TouchableOpacity onPress={onPress} style={[styles.container, style]}>
+      {loading ? (
+        <ActivityIndicator size="small" color="#fff" />
+      ) : (
+        <Text style={styles.text}>{label}</Text>
+      )}
     </TouchableOpacity>
   );
 };

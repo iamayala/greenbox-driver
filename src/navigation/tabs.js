@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 
-import * as React from 'react';
-import { Text, View, StyleSheet, Platform } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { Text, View, StyleSheet, Platform, Image } from 'react-native';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {
@@ -13,6 +13,10 @@ import {
 } from './stack';
 import { Feather } from '@expo/vector-icons';
 import colors from '../constants/colors';
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
+import { getLocalData, storeLocalData } from '../utils/Helpers';
+import { emojis } from '../constants/utils';
 
 const Tab = createBottomTabNavigator();
 
@@ -28,7 +32,52 @@ const styles = StyleSheet.create({
   },
 });
 
-export const MainTabNavigation = () => {
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
+
+export const MainTabNavigation = ({ navigation, route }) => {
+  const [notification, setNotification] = useState(false);
+  const notificationListener = useRef();
+  const responseListener = useRef();
+
+  useEffect(() => {
+    const routeName = getFocusedRouteNameFromRoute(route) ?? '';
+    if (routeName == 'AccountStackScreen') {
+      setNotification(false);
+    }
+  }, []);
+
+  const addNotification = (value) => {
+    storeLocalData('@NOTIFICATION', value).then(() => {
+      // console.log('saved');
+      console.log(value);
+      setNotification(value);
+    });
+  };
+
+  useEffect(() => {
+    // This listener is fired whenever a notification is received while the app is foregrounded
+    notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
+      // addNotification(true);
+    });
+
+    // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
+    responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
+      navigation.navigate('AccountStackScreen');
+      // console.log(response);
+    });
+
+    return () => {
+      Notifications.removeNotificationSubscription(notificationListener.current);
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
+
   return (
     <Tab.Navigator
       initialRouteName="HomeNavigation"
@@ -77,7 +126,6 @@ export const MainTabNavigation = () => {
           ),
           tabBarStyle: ((route) => {
             const routeName = getFocusedRouteNameFromRoute(route) ?? '';
-            // console.log(routeName);
             if (routeName == 'Checkout') {
               return { display: 'none' };
             }

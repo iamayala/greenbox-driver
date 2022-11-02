@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   KeyboardAvoidingView,
   Text,
@@ -19,12 +19,63 @@ import { baseURL, get, post } from '../../utils/Api';
 import ToastMessage from '../../component/ToastMessage';
 import { storeLocalData } from '../../utils/Helpers';
 
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
+import Modal from 'react-native-modal';
+import PromptModal from '../../component/PromptModal';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
+
 function Login({ navigation }) {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [hidepwd, setHidepwd] = useState(true);
+  const [expoPushToken, setExpoPushToken] = useState('');
+  const [recovermodal, setrecovermodal] = useState(false);
+  const [temp, settemp] = useState(null);
+
+  useEffect(() => {
+    registerForPushNotificationsAsync();
+  }, []);
+
+  async function registerForPushNotificationsAsync() {
+    let token;
+    if (Device.isDevice) {
+      const { status: existingStatus } = await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== 'granted') {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== 'granted') {
+        alert('Failed to get push token for push notification!');
+        return;
+      }
+      token = (await Notifications.getExpoPushTokenAsync()).data;
+      setExpoPushToken(token);
+    } else {
+      alert('Must use physical device for Push Notifications');
+    }
+
+    if (Platform.OS === 'android') {
+      Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FF231F7C',
+      });
+    }
+
+    return token;
+  }
 
   const verifyPhone = (e) => {
     const dstPhone = e.split('');
@@ -45,12 +96,15 @@ function Login({ navigation }) {
       customer_password: password,
     })
       .then((res) => {
-        console.log(res.data);
         if (res.data.status == 404) {
           setError('Wrong credentials. Please try again!');
           setLoading(false);
         } else if (res.data.status == 200) {
           handleSaveToLocal(res.data.data);
+          saveNotificationToken(res.data.data);
+        } else if (res.data.status == 204) {
+          setrecovermodal(true);
+          settemp(res.data.data);
         }
       })
       .catch((err) => {
@@ -58,6 +112,17 @@ function Login({ navigation }) {
         setLoading(false);
         setError('An error occurred! Try again!');
       });
+  };
+
+  const saveNotificationToken = (data) => {
+    console.log(data);
+    // post(`${baseURL}/notificationtoken`, {
+    //   customer_id: data[0].customer_id,
+    //   notification_token: expoPushToken,
+    // }).then((res) => {
+    //   console.log(res.data);
+    //   console.log(res.data);
+    // });
   };
 
   const handleSaveToLocal = (data) => {
@@ -82,6 +147,20 @@ function Login({ navigation }) {
           onPress={() => setError(null)}
         />
       )}
+      <Modal isVisible={recovermodal}>
+        <PromptModal
+          text="Looks like this account was deleted, would you like to recover it?"
+          no={() => {
+            setLoading(false);
+            setrecovermodal(false);
+          }}
+          yes={() => {
+            handleSaveToLocal(temp);
+            saveNotificationToken(temp);
+            setrecovermodal(false);
+          }}
+        />
+      </Modal>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'position' : undefined}
         keyboardVerticalOffset={80}>

@@ -16,10 +16,11 @@ import AppButton from '../../component/AppButton';
 import { getLocalData, removeLocalData, storeLocalData } from '../../utils/Helpers';
 import ToastMessage from '../../component/ToastMessage';
 import ProductCard from '../../component/ProductCard';
-import { baseURL, get } from '../../utils/Api';
-import { width } from '../../constants/dimensions';
+import AddressItem from '../../component/AddressItem';
+import NotificationItem from '../../component/NotificationItem';
 import NoData from '../../component/NoData';
 import { emojis } from '../../constants/utils';
+import { width } from '../../constants/dimensions';
 
 const styles = StyleSheet.create({
   text: {
@@ -47,24 +48,9 @@ const styles = StyleSheet.create({
   },
 });
 
-function More({ route, navigation }) {
-  const { item } = route.params;
-  const [product, setproduct] = useState([]);
+function Recover({ route, navigation }) {
   const [message, setMessage] = useState(null);
-  const [loading, setloading] = useState(true);
-
-  useEffect(() => {
-    handleFetch(item.vegetable_type_id);
-  }, []);
-
-  const handleFetch = (id) => {
-    get(`${baseURL}/vegetable/category/${id}`).then((res) => {
-      if (res.data.status == 200) {
-        setproduct(res.data.data);
-        setloading(false);
-      }
-    });
-  };
+  const [location, setLocation] = useState([]);
 
   return (
     <AppScreen style={{ backgroundColor: colors.white, flex: 1 }}>
@@ -81,40 +67,48 @@ function More({ route, navigation }) {
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.topBtn}>
           <Feather name="arrow-left" size={20} color={colors.iconGrey} />
         </TouchableOpacity>
-        <Text style={[styles.text, { fontSize: 18, textTransform: 'capitalize' }]}>
-          {item.type_name}
-        </Text>
+        <Text style={[styles.text, { fontSize: 18 }]}>Recover account</Text>
         <TouchableOpacity style={styles.topBtn}>
           <Feather name="more-vertical" size={20} color={colors.white} />
         </TouchableOpacity>
       </View>
 
-      <FlatList
-        data={product}
-        numColumns={2}
-        refreshing={loading}
-        onRefresh={() => handleFetch(item.vegetable_type_id)}
-        horizontal={false}
-        style={{ paddingHorizontal: 10 }}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 100 }}
-        renderItem={({ item }) => {
-          return (
-            <ProductCard
-              item={item}
-              style={{
-                marginBottom: 10,
-                width: width * 0.5 - 25,
-              }}
-            />
-          );
-        }}
-        ListEmptyComponent={() => {
-          return <NoData label="" emoji={emojis.hide} />;
-        }}
-      />
+      <View
+        style={{
+          paddingHorizontal: 20,
+          flex: 1,
+        }}>
+        <View style={{ alignItems: 'center', paddingTop: 50 }}>
+          <Image source={{ uri: emojis.eyes }} style={{ height: 80, width: 80 }} />
+          <Text style={[styles.text, { marginVertical: 15 }]}>Recover Account</Text>
+          <Text style={[styles.subname, { marginVertical: 15, textAlign: 'center' }]}>
+            Looks like this account was deleted, would you like to recover it?
+          </Text>
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}>
+          <AppButton
+            label="Create New"
+            style={{ width: width * 0.43, backgroundColor: colors.borderGrey }}
+            onPress={() => navigation.navigate('HomeNavigation')}
+          />
+          <AppButton
+            label="Recover"
+            style={{ width: width * 0.43 }}
+            onPress={() =>
+              this.props.navigation.reset({
+                index: 0,
+                routes: [{ name: 'HomeNavigation' }],
+              })
+            }
+          />
+        </View>
+      </View>
     </AppScreen>
   );
 }
 
-export default More;
+export default Recover;

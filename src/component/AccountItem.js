@@ -4,7 +4,7 @@ import { Feather } from '@expo/vector-icons';
 import fonts from '../constants/fonts';
 import colors from '../constants/colors';
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',

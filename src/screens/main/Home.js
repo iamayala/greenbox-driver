@@ -43,7 +43,9 @@ export class Home extends Component {
   handleFetchProducts = () => {
     get(`${baseURL}/vegetable`)
       .then((res) => {
-        this.setState({ products: res.data.data });
+        if (res.data.status == 200) {
+          this.setState({ products: res.data.data });
+        }
       })
       .catch(() => {
         this.setState({ error: 'Something went wrong!' });
@@ -53,7 +55,9 @@ export class Home extends Component {
   handleFetchTypes = () => {
     get(`${baseURL}/vegetabletype`)
       .then((res) => {
-        this.setState({ types: res.data.data, fetching: false });
+        if (res.data.status == 200) {
+          this.setState({ types: res.data.data, fetching: false });
+        }
       })
       .catch((err) => {
         this.setState({ error: 'Something went wrong!' });

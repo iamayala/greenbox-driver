@@ -18,6 +18,8 @@ import styled from '../../style/styles';
 import { getLocalData, removeLocalData, storeLocalData } from '../../utils/Helpers';
 import ToastMessage from '../../component/ToastMessage';
 import { height, width } from '../../constants/dimensions';
+import { baseURL, get, post } from '../../utils/Api';
+import { emojis } from '../../constants/utils';
 
 const styles = StyleSheet.create({
   text: {
@@ -67,59 +69,52 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     fontFamily: fonts.medium,
   },
+  btn: {
+    height: 35,
+    width: 35,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+    backgroundColor: colors.backgroundGrey,
+    marginRight: 10,
+  },
 });
 
 function Help({ route, navigation }) {
   const [alert, setAlert] = useState(null);
   const [selectedQuestion, setselectedQuestion] = useState(null);
-  const [questions, setquestions] = useState([
-    {
-      senderId: 2,
-      question: "I can't find my mayonnaise. And I can't eat my food without it.",
-      answer: 'This is just an answer',
-    },
-    { senderId: 2, question: 'Please, help!', answer: 'This is just an answer' },
-    {
-      senderId: 0,
-      question: 'We are working on that, please bare with us. Thank you!',
-      answer: 'This is just an answer',
-    },
-  ]);
+  const [questions, setquestions] = useState([]);
+  const [loading, setloading] = useState(false);
 
-  const senderMessage = ({ item }) => {
-    return (
-      <View
-        style={[
-          styles.messageView,
-          {
-            backgroundColor: item.senderId == 0 ? colors.borderGrey : colors.primary,
-            alignSelf: item.senderId == 0 ? 'left' : 'flex-end',
-          },
-        ]}>
-        <Text
-          style={[
-            styles.textMessage,
-            {
-              color: item.senderId == 0 ? colors.textDark : colors.white,
-            },
-          ]}>
-          {item.message}
-        </Text>
-        <Text
-          style={[
-            styles.textMessage,
-            {
-              fontSize: 11,
-              color: colors.iconGrey,
-              textAlign: 'right',
-              marginTop: 3,
-              color: item.senderId == 0 ? colors.textDark : colors.white,
-            },
-          ]}>
-          now
-        </Text>
-      </View>
-    );
+  useEffect(() => {
+    getQuestions();
+  }, []);
+
+  const getQuestions = () => {
+    get(`${baseURL}/faq`).then((res) => {
+      if (res.data.status == 200) {
+        const result = res.data.data;
+        result.sort((a, b) => {
+          return b.faq_rating - a.faq_rating;
+        });
+        setquestions(result);
+      }
+    });
+  };
+
+  const rateQuestion = (item, type) => {
+    post(`${baseURL}/updatefaq`, {
+      faq_rating: type == 'up' ? item.faq_rating + 1 : item.faq_rating - 1,
+      faq_id: item.faq_id,
+    }).then((res) => {
+      if (res.data == 200) {
+        getQuestions();
+        setAlert('Thank you for your feedback');
+        setTimeout(() => {
+          setAlert(null);
+        }, 2000);
+      }
+    });
   };
 
   const renderQuestion = ({ item }) => {
@@ -136,7 +131,7 @@ function Help({ route, navigation }) {
           }}>
           <Text
             style={{ fontFamily: fonts.medium, color: colors.textDark, flex: 1, marginRight: 5 }}>
-            {item.question}
+            {item.faq_question}
           </Text>
           <Feather
             name={item == selectedQuestion ? 'chevron-up' : 'chevron-down'}
@@ -145,9 +140,20 @@ function Help({ route, navigation }) {
           />
         </View>
         {item == selectedQuestion && (
-          <Text style={{ fontFamily: fonts.regular, color: colors.textGrey, marginTop: 5 }}>
-            {item.answer}
-          </Text>
+          <>
+            <Text style={{ fontFamily: fonts.regular, color: colors.textGrey, marginTop: 5 }}>
+              {item.faq_answer}
+            </Text>
+            <View style={{ flexDirection: 'row', marginTop: 20, alignItems: 'center' }}>
+              <Text style={{ fontFamily: fonts.medium, marginRight: 20 }}>Was this helpful?</Text>
+              <TouchableOpacity onPress={() => rateQuestion(item, 'up')} style={styles.btn}>
+                <Image source={{ uri: emojis.yes }} style={{ height: 16, width: 16 }} />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => rateQuestion(item, 'down')} style={styles.btn}>
+                <Image source={{ uri: emojis.no }} style={{ height: 16, width: 16 }} />
+              </TouchableOpacity>
+            </View>
+          </>
         )}
       </TouchableOpacity>
     );
@@ -186,11 +192,20 @@ function Help({ route, navigation }) {
           <Feather name="arrow-left" size={20} color={colors.white} />
         </TouchableOpacity>
       </View>
-      <FlatList
-        data={questions}
-        contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 5 }}
-        renderItem={renderQuestion}
-      />
+      <View style={{ flex: 1 }}>
+        <FlatList
+          onRefresh={() => getQuestions()}
+          refreshing={loading}
+          data={questions}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            paddingHorizontal: 20,
+            paddingTop: 5,
+            paddingBottom: height * 0.3,
+          }}
+          renderItem={renderQuestion}
+        />
+      </View>
     </AppScreen>
   );
 }

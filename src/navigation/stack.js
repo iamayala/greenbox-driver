@@ -19,6 +19,9 @@ import Profile from '../screens/main/Profile';
 import Help from '../screens/main/Help';
 import About from '../screens/main/About';
 import Checkout from '../screens/main/Checkout';
+import Settings from '../screens/main/Settings';
+import Track from '../screens/main/Track';
+import Recover from '../screens/authentication/Recover';
 
 const Stack = createStackNavigator();
 
@@ -85,6 +88,8 @@ export function AccountStackScreen() {
       <Stack.Screen name="Profile" component={Profile} />
       <Stack.Screen name="Help" component={Help} />
       <Stack.Screen name="About" component={About} />
+      <Stack.Screen name="Settings" component={Settings} />
+      <Stack.Screen name="Track" component={Track} />
     </Stack.Navigator>
   );
 }
@@ -101,6 +106,7 @@ export function AuthenticationStackScreen() {
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="OTP" component={OTP} />
       <Stack.Screen name="Location" component={Location} />
+      <Stack.Screen name="Recover" component={Recover} />
     </Stack.Navigator>
   );
 }

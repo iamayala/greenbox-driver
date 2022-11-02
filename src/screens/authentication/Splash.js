@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import AppScreen from '../../component/AppScreen';
 import colors from '../../constants/colors';
 import fonts from '../../constants/fonts';
@@ -16,10 +16,12 @@ const styles = StyleSheet.create({
 function Splash({ navigation }) {
   useEffect(() => {
     getLocalData('@USERDATA').then((res) => {
+      console.log(res);
       if (res.length > 0) {
         navigation.navigate('MainStack');
       } else {
-        navigation.navigate('AuthenticationStack');
+        navigation.navigate('Login');
+        // navigation.navigate('Recover');
       }
     });
   }, []);
@@ -47,7 +49,7 @@ function Splash({ navigation }) {
           style={{ position: 'absolute', bottom: 10, flexDirection: 'row', alignItems: 'center' }}>
           <Text style={styles.signature}>Made with </Text>
           <AntDesign name="heart" size={13} color={colors.danger} />
-          <Text style={styles.signature}> by Serge. M</Text>
+          {/* <Text style={styles.signature}> by Serge. M</Text> */}
         </View>
       </View>
     </AppScreen>

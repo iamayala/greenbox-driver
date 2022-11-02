@@ -173,6 +173,7 @@ export class Orders extends Component {
                       : ''
                   }
                   item={item}
+                  onPress={() => navigation.navigate('Track', { item })}
                 />
               );
             }}

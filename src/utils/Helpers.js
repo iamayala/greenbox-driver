@@ -11,7 +11,7 @@ export const storeLocalData = async (storeName, value) => {
 export const getLocalData = async (storeName) => {
   try {
     const value = await AsyncStorage.getItem(storeName);
-    return value != null ? JSON.parse(value) : null;
+    return value != null ? JSON.parse(value) : [];
   } catch (e) {
     console.log(`Error: ${e}`);
   }
@@ -31,6 +31,14 @@ export const deleteLocalData = async (storeName, value) => {
 export const removeLocalData = async (storeName) => {
   try {
     await AsyncStorage.removeItem(storeName);
+  } catch (e) {
+    console.log(`Error: ${e}`);
+  }
+};
+
+export const clearLocalData = async () => {
+  try {
+    await AsyncStorage.clear();
   } catch (e) {
     console.log(`Error: ${e}`);
   }

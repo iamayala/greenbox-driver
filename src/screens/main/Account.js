@@ -8,7 +8,7 @@ import colors from '../../constants/colors';
 import fonts from '../../constants/fonts';
 import { emojis } from '../../constants/utils';
 import { baseURL, get } from '../../utils/Api';
-import { getLocalData } from '../../utils/Helpers';
+import { clearLocalData, getLocalData, storeLocalData } from '../../utils/Helpers';
 import Modal from 'react-native-modal';
 import PromptModal from '../../component/PromptModal';
 
@@ -37,13 +37,25 @@ function Account({ navigation }) {
 
   useEffect(() => {
     getLocalData('@USERDATA').then((res) => {
-      // console.log(res[0]);
       setProfile(res[0]);
     });
+    addNotification(false);
   }, []);
 
   const handleLogout = () => {
     setloading(true);
+    clearLocalData().then(() => {
+      setloading(false);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'AuthenticationStack' }],
+      });
+    });
+  };
+
+  const addNotification = (value) => {
+    storeLocalData('@NOTIFICATION', value);
+    console.log(value);
   };
 
   return (
@@ -126,14 +138,28 @@ function Account({ navigation }) {
           onPress={() => navigation.navigate('Notification')}
           badge={2}
         />
+        <AccountItem
+          icon="settings"
+          label="settings"
+          onPress={() => navigation.navigate('Settings', { profile })}
+        />
         <AccountItem icon="help-circle" label="help" onPress={() => navigation.navigate('Help')} />
         <AccountItem icon="info" label="about" onPress={() => navigation.navigate('About')} />
-        <AppButton
-          label="Logout"
-          style={{ backgroundColor: colors.danger, marginTop: 45 }}
-          onPress={loading ? () => {} : () => setlogoutmodal(true)}
-          loading={loading}
-        />
+        <TouchableOpacity
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            borderBottomColor: colors.backgroundGrey,
+            borderBottomWidth: 1,
+            height: 60,
+          }}
+          onPress={loading ? () => {} : () => setlogoutmodal(true)}>
+          <Feather name="arrow-right-circle" size={20} color={colors.danger} />
+          <Text
+            style={[styles.text, { fontSize: 16, flex: 1, marginLeft: 20, color: colors.danger }]}>
+            Logout
+          </Text>
+        </TouchableOpacity>
       </ScrollView>
     </AppScreen>
   );

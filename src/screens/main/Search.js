@@ -60,7 +60,9 @@ function Search({ navigation }) {
   const handleFetchTypes = () => {
     get(`${baseURL}/vegetabletype`)
       .then((res) => {
-        setCategory(res.data.data);
+        if (res.status == 200) {
+          setCategory(res.data.data);
+        }
       })
       .catch((err) => {
         setError('Something went wrong!');
@@ -70,7 +72,9 @@ function Search({ navigation }) {
   // handle fetch products
   const handleFetchProducts = () => {
     get(`${baseURL}/vegetable`).then((res) => {
-      setproducts(res.data.data);
+      if (res.status == 200) {
+        setproducts(res.data.data);
+      }
     });
   };
 

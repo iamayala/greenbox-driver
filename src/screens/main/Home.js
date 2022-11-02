@@ -33,7 +33,7 @@ export class Home extends Component {
   componentDidMount() {
     getLocalData('@USERDATA').then((res) => {
       var data = res[0];
-      this.setState({ location: data.customer_sector });
+      this.setState({ location: data?.customer_sector });
     });
     this.handleFetchProducts();
     this.handleFetchTypes();

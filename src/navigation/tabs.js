@@ -8,7 +8,10 @@ import {
   AccountStackScreen,
   CartStackScreen,
   FavStackScreen,
+  FeedbackStackScreen,
   HomeStackScreen,
+  MenuStackScreen,
+  NotificationStackScreen,
   SearchStackScreen,
 } from './stack';
 import { Feather } from '@expo/vector-icons';
@@ -100,28 +103,28 @@ export const MainTabNavigation = ({ navigation, route }) => {
       />
 
       <Tab.Screen
-        name="SearchNavigation"
-        component={SearchStackScreen}
+        name="MenuStackScreen"
+        component={MenuStackScreen}
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-              <Feather name="search" size={24} color={focused ? colors.primary : colors.textGrey} />
+              <Feather
+                name="book-open"
+                size={24}
+                color={focused ? colors.primary : colors.textGrey}
+              />
             </View>
           ),
         }}
       />
 
       <Tab.Screen
-        name="CartStackScreen"
-        component={CartStackScreen}
+        name="FeedbackStackScreen"
+        component={FeedbackStackScreen}
         options={({ route }) => ({
           tabBarIcon: ({ focused }) => (
             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-              <Feather
-                name="shopping-bag"
-                size={24}
-                color={focused ? colors.primary : colors.textGrey}
-              />
+              <Feather name="star" size={24} color={focused ? colors.primary : colors.textGrey} />
             </View>
           ),
           tabBarStyle: ((route) => {
@@ -135,12 +138,12 @@ export const MainTabNavigation = ({ navigation, route }) => {
       />
 
       <Tab.Screen
-        name="FavStackScreen"
-        component={FavStackScreen}
+        name="NotificationStackScreen"
+        component={NotificationStackScreen}
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-              <Feather name="heart" size={24} color={focused ? colors.primary : colors.textGrey} />
+              <Feather name="bell" size={24} color={focused ? colors.primary : colors.textGrey} />
             </View>
           ),
         }}

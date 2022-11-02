@@ -9,7 +9,7 @@ import { AntDesign } from '@expo/vector-icons';
 const styles = StyleSheet.create({
   signature: {
     fontFamily: fonts.medium,
-    color: colors.textGrey,
+    color: colors.white,
   },
 });
 
@@ -20,7 +20,7 @@ function Splash({ navigation }) {
       if (res.length > 0) {
         navigation.navigate('MainStack');
       } else {
-        navigation.navigate('Login');
+        navigation.navigate('MainStack');
         // navigation.navigate('Recover');
       }
     });
@@ -29,7 +29,7 @@ function Splash({ navigation }) {
   return (
     <AppScreen
       style={{
-        backgroundColor: colors.backgroundGrey,
+        backgroundColor: colors.primary,
       }}>
       <View
         style={{
@@ -42,7 +42,7 @@ function Splash({ navigation }) {
           style={{ height: 100, width: 100, resizeMode: 'contain' }}
         />
         <Text
-          style={{ marginTop: 20, fontFamily: fonts.medium, fontSize: 35, color: colors.textDark }}>
+          style={{ marginTop: 20, fontFamily: fonts.medium, fontSize: 35, color: colors.white }}>
           GreenBox
         </Text>
         <View

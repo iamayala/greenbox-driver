@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Switch } from 'react-native';
 import AccountItem from '../../component/AccountItem';
 import AppButton from '../../component/AppButton';
 import AppScreen from '../../component/AppScreen';
@@ -28,12 +28,21 @@ const styles = StyleSheet.create({
     borderColor: colors.backgroundGrey,
     borderWidth: 1,
   },
+  itemContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomColor: colors.backgroundGrey,
+    borderBottomWidth: 1,
+    height: 60,
+    // marginHorizontal: 20,
+  },
 });
 
 function Account({ navigation }) {
   const [profile, setProfile] = useState(null);
   const [logoutmodal, setlogoutmodal] = useState(false);
   const [loading, setloading] = useState(false);
+  const [offline, setoffline] = useState(true);
 
   useEffect(() => {
     getLocalData('@USERDATA').then((res) => {
@@ -55,7 +64,7 @@ function Account({ navigation }) {
 
   const addNotification = (value) => {
     storeLocalData('@NOTIFICATION', value);
-    console.log(value);
+    // console.log(value);
   };
 
   return (
@@ -120,31 +129,39 @@ function Account({ navigation }) {
             <Feather name="edit-2" size={18} color={colors.iconDark} />
           </TouchableOpacity>
         </View>
+        <View style={styles.itemContainer}>
+          <Feather name="bell" size={20} color={colors.iconDark} />
+          <Text style={[styles.text, { fontSize: 16, flex: 1, marginLeft: 20 }]}>
+            {offline ? `Close` : `Open`} Store
+          </Text>
+          <Switch
+            trackColor={{ false: colors.backgroundGrey, true: colors.backgroundGrey }}
+            thumbColor={offline ? colors.primary : colors.secondary}
+            ios_backgroundColor={colors.backgroundGrey}
+            onValueChange={() => setoffline(!offline)}
+            value={offline}
+          />
+        </View>
         <AccountItem
-          icon="box"
-          label="orders"
-          onPress={() => navigation.navigate('Orders', { customer_id: profile.customer_id })}
+          icon="bar-chart-2"
+          label="analytics"
+          onPress={() => navigation.navigate('Analytics')}
         />
-        {/* <AccountItem icon="smile" label="my details" /> */}
-        {/* <AccountItem icon="credit-card" label="payment methods" /> */}
         <AccountItem
-          icon="map-pin"
-          label="delivery address"
-          onPress={() => navigation.navigate('Address', { profile: profile })}
-        />
-        <AccountItem
-          icon="bell"
-          label="notifications"
-          onPress={() => navigation.navigate('Notification')}
-          badge={2}
+          icon="credit-card"
+          label="payments"
+          onPress={() => navigation.navigate('Payment')}
         />
         <AccountItem
           icon="settings"
           label="settings"
           onPress={() => navigation.navigate('Settings', { profile })}
         />
-        <AccountItem icon="help-circle" label="help" onPress={() => navigation.navigate('Help')} />
-        <AccountItem icon="info" label="about" onPress={() => navigation.navigate('About')} />
+        <AccountItem
+          icon="help-circle"
+          label="support"
+          onPress={() => navigation.navigate('Help')}
+        />
         <TouchableOpacity
           style={{
             flexDirection: 'row',

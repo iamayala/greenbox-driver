@@ -12,14 +12,7 @@ import AppScreen from '../../component/AppScreen';
 import { Feather } from '@expo/vector-icons';
 import colors from '../../constants/colors';
 import fonts from '../../constants/fonts';
-import AppButton from '../../component/AppButton';
-import { getLocalData, removeLocalData, storeLocalData } from '../../utils/Helpers';
 import ToastMessage from '../../component/ToastMessage';
-import ProductCard from '../../component/ProductCard';
-import AddressItem from '../../component/AddressItem';
-import NotificationItem from '../../component/NotificationItem';
-import NoData from '../../component/NoData';
-import { emojis } from '../../constants/utils';
 
 const styles = StyleSheet.create({
   text: {
@@ -47,9 +40,8 @@ const styles = StyleSheet.create({
   },
 });
 
-function Notification({ route, navigation }) {
+function Analytics({ route, navigation }) {
   const [message, setMessage] = useState(null);
-  const [location, setLocation] = useState([]);
 
   return (
     <AppScreen style={{ backgroundColor: colors.white, flex: 1 }}>
@@ -58,32 +50,22 @@ function Notification({ route, navigation }) {
         style={{
           height: 65,
           flexDirection: 'row',
-          justifyContent: 'center',
+          justifyContent: 'space-between',
           alignItems: 'center',
           paddingHorizontal: 15,
           backgroundColor: colors.white,
         }}>
-        <Text style={[styles.text, { fontSize: 18 }]}>Notifications</Text>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.topBtn}>
+          <Feather name="arrow-left" size={20} color={colors.iconGrey} />
+        </TouchableOpacity>
+        <Text style={[styles.text, { fontSize: 18 }]}>Analytics</Text>
+        <TouchableOpacity style={styles.topBtn}>
+          <Feather name="more-vertical" size={20} color={colors.white} />
+        </TouchableOpacity>
       </View>
-      <View style={{ marginBottom: 10 }}>
-        <FlatList
-          data={location}
-          renderItem={({ item }) => {
-            return <NotificationItem />;
-          }}
-          ListEmptyComponent={() => {
-            return (
-              <NoData
-                style={{ selfAlign: 'center' }}
-                label="Oops! you don't have any notifications!"
-                emoji={emojis.noNotifications}
-              />
-            );
-          }}
-        />
-      </View>
+      <View style={{ marginBottom: 10 }}></View>
     </AppScreen>
   );
 }
 
-export default Notification;
+export default Analytics;

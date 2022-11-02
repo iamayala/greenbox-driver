@@ -20,7 +20,6 @@ import AddressItem from '../../component/AddressItem';
 import NotificationItem from '../../component/NotificationItem';
 import NoData from '../../component/NoData';
 import { emojis } from '../../constants/utils';
-import { width } from '../../constants/dimensions';
 
 const styles = StyleSheet.create({
   text: {
@@ -48,7 +47,7 @@ const styles = StyleSheet.create({
   },
 });
 
-function Recover({ route, navigation }) {
+function Feedback({ route, navigation }) {
   const [message, setMessage] = useState(null);
   const [location, setLocation] = useState([]);
 
@@ -59,56 +58,32 @@ function Recover({ route, navigation }) {
         style={{
           height: 65,
           flexDirection: 'row',
-          justifyContent: 'space-between',
+          justifyContent: 'center',
           alignItems: 'center',
           paddingHorizontal: 15,
           backgroundColor: colors.white,
         }}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.topBtn}>
-          <Feather name="arrow-left" size={20} color={colors.iconGrey} />
-        </TouchableOpacity>
-        <Text style={[styles.text, { fontSize: 18 }]}>Recover account</Text>
-        <TouchableOpacity style={styles.topBtn}>
-          <Feather name="more-vertical" size={20} color={colors.white} />
-        </TouchableOpacity>
+        <Text style={[styles.text, { fontSize: 18 }]}>Feedback</Text>
       </View>
-
-      <View
-        style={{
-          paddingHorizontal: 20,
-          flex: 1,
-        }}>
-        <View style={{ alignItems: 'center', paddingTop: 50 }}>
-          <Image source={{ uri: emojis.eyes }} style={{ height: 80, width: 80 }} />
-          <Text style={[styles.text, { marginVertical: 15 }]}>Recover Account</Text>
-          <Text style={[styles.subname, { marginVertical: 15, textAlign: 'center' }]}>
-            Looks like this account was deleted, would you like to recover it?
-          </Text>
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-          }}>
-          <AppButton
-            label="Create New"
-            style={{ width: width * 0.43, backgroundColor: colors.borderGrey }}
-            onPress={() => navigation.navigate('HomeNavigation')}
-          />
-          <AppButton
-            label="Recover"
-            style={{ width: width * 0.43 }}
-            onPress={() =>
-              this.props.navigation.reset({
-                index: 0,
-                routes: [{ name: 'HomeNavigation' }],
-              })
-            }
-          />
-        </View>
+      <View style={{ marginBottom: 10 }}>
+        <FlatList
+          data={location}
+          renderItem={({ item }) => {
+            return <NotificationItem />;
+          }}
+          ListEmptyComponent={() => {
+            return (
+              <NoData
+                style={{ selfAlign: 'center' }}
+                label="Oops! you don't have any feedback!"
+                emoji={emojis.noNotifications}
+              />
+            );
+          }}
+        />
       </View>
     </AppScreen>
   );
 }
 
-export default Recover;
+export default Feedback;

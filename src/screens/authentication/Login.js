@@ -147,20 +147,6 @@ function Login({ navigation }) {
           onPress={() => setError(null)}
         />
       )}
-      <Modal isVisible={recovermodal}>
-        <PromptModal
-          text="Looks like this account was deleted, would you like to recover it?"
-          no={() => {
-            setLoading(false);
-            setrecovermodal(false);
-          }}
-          yes={() => {
-            handleSaveToLocal(temp);
-            saveNotificationToken(temp);
-            setrecovermodal(false);
-          }}
-        />
-      </Modal>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'position' : undefined}
         keyboardVerticalOffset={80}>
@@ -169,22 +155,21 @@ function Login({ navigation }) {
             contentContainerStyle={{ paddingHorizontal: 20 }}
             keyboardShouldPersistTaps="always">
             <View style={{ height: 200 }} />
-            <Text style={styled.header}>Login</Text>
+            <Text style={styled.header}>
+              <Text style={{ color: colors.primary }}>Vendor</Text> Login
+            </Text>
             <Text style={[styled.subheader, { marginBottom: 25 }]}>
-              Enter your phone number and password
+              Enter your username and password
             </Text>
 
             <View style={{ marginVertical: 10 }}>
-              <Text style={styled.label}>Phone Number</Text>
+              <Text style={styled.label}>Admin Username</Text>
               <View style={styled.inputField}>
-                <Text style={[styled.label, { color: colors.textDark, marginRight: 10 }]}>
-                  +250
-                </Text>
                 <TextInput
                   style={styled.textInput}
                   keyboardType="phone-pad"
                   maxLength={9}
-                  placeholder="Phone"
+                  placeholder="Usernmae"
                   onChangeText={(e) => setPhone(e)}
                 />
               </View>
@@ -205,7 +190,7 @@ function Login({ navigation }) {
               </View>
             </View>
 
-            <View style={{ height: 180, justifyContent: 'space-between' }}>
+            <View style={{ justifyContent: 'space-between' }}>
               <TouchableOpacity style={{ marginTop: 10, marginBottom: 15 }}>
                 <Text
                   style={{ fontFamily: fonts.medium, color: colors.textGrey, textAlign: 'right' }}>
@@ -223,21 +208,6 @@ function Login({ navigation }) {
                 label="Login"
                 loading={loading}
               />
-
-              <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
-                <Text
-                  style={{
-                    color: colors.textDark,
-                    fontFamily: fonts.medium,
-                    textAlign: 'center',
-                    marginTop: 25,
-                  }}>
-                  Don't have an account?{' '}
-                  <Text style={{ color: colors.primary, textDecorationLine: 'underline' }}>
-                    Create Account
-                  </Text>
-                </Text>
-              </TouchableOpacity>
             </View>
           </ScrollView>
         </TouchableWithoutFeedback>

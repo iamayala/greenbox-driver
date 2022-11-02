@@ -47,14 +47,13 @@ const styles = StyleSheet.create({
   },
 });
 
-function More({ route, navigation }) {
-  const { item } = route.params;
+function Menu({ route, navigation }) {
   const [product, setproduct] = useState([]);
   const [message, setMessage] = useState(null);
   const [loading, setloading] = useState(true);
 
   useEffect(() => {
-    handleFetch(item.vegetable_type_id);
+    // handleFetch(item.vegetable_type_id);
   }, []);
 
   const handleFetch = (id) => {
@@ -73,27 +72,19 @@ function More({ route, navigation }) {
         style={{
           height: 65,
           flexDirection: 'row',
-          justifyContent: 'space-between',
+          justifyContent: 'center',
           alignItems: 'center',
           paddingHorizontal: 15,
           backgroundColor: colors.white,
         }}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.topBtn}>
-          <Feather name="arrow-left" size={20} color={colors.iconGrey} />
-        </TouchableOpacity>
-        <Text style={[styles.text, { fontSize: 18, textTransform: 'capitalize' }]}>
-          {item.type_name}
-        </Text>
-        <TouchableOpacity style={styles.topBtn}>
-          <Feather name="more-vertical" size={20} color={colors.white} />
-        </TouchableOpacity>
+        <Text style={[styles.text, { fontSize: 18, textTransform: 'capitalize' }]}>Menu</Text>
       </View>
 
       <FlatList
         data={product}
         numColumns={2}
-        refreshing={loading}
-        onRefresh={() => handleFetch(item.vegetable_type_id)}
+        // refreshing={loading}
+        // onRefresh={() => handleFetch(item.vegetable_type_id)}
         horizontal={false}
         style={{ paddingHorizontal: 10 }}
         showsVerticalScrollIndicator={false}
@@ -117,4 +108,4 @@ function More({ route, navigation }) {
   );
 }
 
-export default More;
+export default Menu;

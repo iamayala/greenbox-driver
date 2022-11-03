@@ -87,7 +87,7 @@ function Profile({ navigation }) {
       customer_password: pwd,
     })
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         if (res.data.status == 400) {
           setError('Account already exist! Please user a different phone number!');
         } else {

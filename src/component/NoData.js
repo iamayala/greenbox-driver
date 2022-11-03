@@ -33,8 +33,8 @@ const NoData = ({ label, style, emoji }) => {
           uri: emoji,
         }}
         style={{
-          width: 50.11,
-          height: 50.11,
+          width: 45.11,
+          height: 45.11,
           borderRadius: 17,
         }}
       />

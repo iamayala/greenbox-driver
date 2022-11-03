@@ -13,6 +13,7 @@ import Settings from '../screens/main/Settings';
 import Feedback from '../screens/main/Feedback';
 import Payment from '../screens/main/Payment';
 import Analytics from '../screens/main/Analytics';
+import New from '../screens/main/New';
 
 const Stack = createStackNavigator();
 
@@ -35,6 +36,7 @@ export function MenuStackScreen() {
         headerShown: false,
       }}>
       <Stack.Screen name="Menu" component={Menu} />
+      <Stack.Screen name="New" component={New} />
     </Stack.Navigator>
   );
 }

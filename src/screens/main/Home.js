@@ -1,32 +1,75 @@
 import React, { Component } from 'react';
-import { Image, ScrollView, Text, View, TextInput, TouchableOpacity, FlatList } from 'react-native';
+import {
+  Image,
+  ScrollView,
+  Text,
+  View,
+  TextInput,
+  TouchableOpacity,
+  FlatList,
+  StyleSheet,
+  Switch,
+} from 'react-native';
 import AppScreen from '../../component/AppScreen';
 import { Feather } from '@expo/vector-icons';
 import styled from '../../style/styles';
 import colors from '../../constants/colors';
-import SectionHeader from '../../component/SectionHeader';
-import ProductCard from '../../component/ProductCard';
 import { getLocalData } from '../../utils/Helpers';
 import ToastMessage from '../../component/ToastMessage';
 import { baseURL, get } from '../../utils/Api';
-import TypeTab from '../../component/TypeTab';
-import { width } from '../../constants/dimensions';
 import { emojis } from '../../constants/utils';
 import fonts from '../../constants/fonts';
 import NoData from '../../component/NoData';
+import Tab from '../../component/Tab';
+import OrderCard from '../../component/OrderCard';
+
+const styles = StyleSheet.create({
+  text: {
+    fontSize: 24,
+    fontFamily: fonts.bold,
+    color: colors.textDark,
+  },
+  topBtn: {
+    height: 40.67,
+    width: 40.67,
+    borderRadius: 17,
+    backgroundColor: colors.white,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  name: {
+    fontSize: 24,
+    fontFamily: fonts.bold,
+    color: colors.textDark,
+  },
+  subname: {
+    fontFamily: fonts.regular,
+    fontSize: 16,
+    color: colors.textGrey,
+  },
+  tab: {
+    backgroundColor: colors.primary,
+    height: 45,
+    marginRight: 7,
+    marginTop: 7,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 15,
+    paddingHorizontal: 15,
+    flexDirection: 'row',
+  },
+});
 
 export class Home extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      offline: false,
+      orders: [],
       error: null,
-      location: '',
-      success: null,
-      products: [],
-      types: [],
-      fetching: true,
-      cart: [],
+      tab: 1,
+      loading: false,
     };
   }
 
@@ -35,16 +78,18 @@ export class Home extends Component {
       var data = res[0];
       this.setState({ location: data?.customer_sector });
     });
-    this.handleFetchProducts();
-    this.handleFetchTypes();
-    this.handleFetchCart();
+    this.handleFetchOrders();
   }
 
-  handleFetchProducts = () => {
-    get(`${baseURL}/vegetable`)
+  handleFetchOrders = () => {
+    get(`${baseURL}/orders`)
       .then((res) => {
         if (res.data.status == 200) {
-          this.setState({ products: res.data.data });
+          var result = res.data.data;
+          for (const i in result) {
+            result[i] = { ...result[i], basket: JSON.parse(result[i].basket) };
+          }
+          this.setState({ orders: result });
         }
       })
       .catch(() => {
@@ -52,36 +97,8 @@ export class Home extends Component {
       });
   };
 
-  handleFetchTypes = () => {
-    get(`${baseURL}/vegetabletype`)
-      .then((res) => {
-        if (res.data.status == 200) {
-          this.setState({ types: res.data.data, fetching: false });
-        }
-      })
-      .catch((err) => {
-        this.setState({ error: 'Something went wrong!' });
-      });
-  };
-
-  handleFetchCart = () => {
-    getLocalData('@CART').then((res) => {
-      var value = res == null ? [] : res;
-      this.setState({ cart: value });
-    });
-  };
-
-  checked = (veg) => {
-    const res = this.state.cart;
-    res.filter((item) => item.vegetable_id == veg.vegetable_id);
-    if (res.length > 0) {
-      return true;
-    }
-    return false;
-  };
-
   render() {
-    const { error, location, success, products, types, fetching, cart } = this.state;
+    const { error, tab, fetching, offline, orders, loading } = this.state;
     const { navigation } = this.props;
 
     if (fetching) {
@@ -97,74 +114,50 @@ export class Home extends Component {
             onPress={() => setError(null)}
           />
         )}
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={{ alignItems: 'center' }}>
-            <Image
-              source={require('../../assets/logo.png')}
-              style={{ height: 70, width: 40, resizeMode: 'contain' }}
-            />
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5 }}>
-              <Feather
-                name="map-pin"
-                size={18}
-                color={colors.iconDark}
-                style={{ marginRight: 10 }}
-              />
-              <Text style={styled.normalText}>Kigali, {location}</Text>
-            </View>
-          </View>
-          <View style={{ marginHorizontal: 15, marginTop: 20 }}>
+        <View
+          style={{
+            height: 65,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingHorizontal: 15,
+            backgroundColor: colors.white,
+          }}>
+          <Text style={[styles.text, { fontSize: 18 }]}>Hello James,</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={[styles.text, { fontSize: 13, marginRight: 10, color: colors.textGrey }]}>
+              Status
+            </Text>
             <View
               style={{
-                height: 114.99,
-                backgroundColor: colors.primary,
-                borderRadius: 15,
-              }}></View>
-          </View>
-
-          {types?.map((child, index) => {
-            return (
-              <View key={index}>
-                <SectionHeader
-                  onPress={() => navigation.navigate('More', { item: child })}
-                  title={child.type_name}
-                  link="See all"
-                />
-                <FlatList
-                  nestedScrollEnabled
-                  data={products
-                    .filter((item) => item.vegetable_type_id == child.vegetable_type_id)
-                    .slice(0, 5)}
-                  horizontal
-                  keyExtractor={(item) => item.vegetable_id}
-                  contentContainerStyle={{ paddingHorizontal: 10 }}
-                  style={{ marginVertical: 15 }}
-                  showsHorizontalScrollIndicator={false}
-                  renderItem={({ item }) => {
-                    return (
-                      <ProductCard
-                        item={item}
-                        checked={this.checked(item)}
-                        onPress={() => navigation.navigate('Details', { item })}
-                      />
-                    );
-                  }}
-                />
-              </View>
-            );
-          })}
-
-          <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
-            <Text style={{ fontFamily: fonts.medium, color: colors.textGrey }}>
-              End of the world!
-            </Text>
-            <Image
-              source={{ uri: emojis.eyes }}
-              style={{ height: 18, width: 18, marginLeft: 10 }}
+                height: 17,
+                width: 17,
+                borderRadius: 10,
+                backgroundColor: colors.success,
+              }}
             />
           </View>
-          <View style={{ height: 100 }} />
-        </ScrollView>
+        </View>
+        <View style={{ flexDirection: 'row', marginHorizontal: 12, marginTop: 10 }}>
+          <Tab label="Pending" onPress={() => this.setState({ tab: 1 })} active={tab == 1} />
+          <Tab label="In progress" onPress={() => this.setState({ tab: 2 })} active={tab == 2} />
+          <Tab label="Completed" onPress={() => this.setState({ tab: 3 })} active={tab == 3} />
+          <Tab label="Cancelled" onPress={() => this.setState({ tab: 4 })} active={tab == 4} />
+        </View>
+        <View style={{ flex: 1 }}>
+          <FlatList
+            refreshing={loading}
+            onRefresh={() => this.handleFetchOrders()}
+            data={orders.filter((item) => item.order_status == tab)}
+            contentContainerStyle={{ paddingTop: 10 }}
+            renderItem={({ item }) => {
+              return <OrderCard item={item} />;
+            }}
+            ListEmptyComponent={() => {
+              return <NoData emoji={emojis.hide} label="No orders on this tab" />;
+            }}
+          />
+        </View>
       </AppScreen>
     );
   }

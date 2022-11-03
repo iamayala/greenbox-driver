@@ -58,7 +58,7 @@ export const MainTabNavigation = ({ navigation, route }) => {
   const addNotification = (value) => {
     storeLocalData('@NOTIFICATION', value).then(() => {
       // console.log('saved');
-      console.log(value);
+      // console.log(value);
       setNotification(value);
     });
   };

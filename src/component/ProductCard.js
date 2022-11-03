@@ -25,9 +25,9 @@ const styles = StyleSheet.create({
     fontFamily: fonts.regular,
   },
   button: {
-    height: 45.67,
-    width: 45.67,
-    borderRadius: 17,
+    height: 40.67,
+    width: 40.67,
+    borderRadius: 13,
     backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
@@ -65,11 +65,8 @@ const ProductCard = ({ item, onPress, style, checked }) => {
           }}>
           <Text style={styles.price}>RWF {item?.price}</Text>
           <TouchableOpacity
-            style={[
-              styles.button,
-              { display: 'none', backgroundColor: checked ? colors.danger : colors.primary },
-            ]}>
-            <Feather name={checked ? 'x' : 'plus'} size={24} color={colors.white} />
+            style={[styles.button, { backgroundColor: checked ? colors.danger : colors.primary }]}>
+            <Feather name="edit-2" size={18} color={colors.white} />
           </TouchableOpacity>
         </View>
       </View>

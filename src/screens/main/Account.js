@@ -130,7 +130,7 @@ function Account({ navigation }) {
           </TouchableOpacity>
         </View>
         <View style={styles.itemContainer}>
-          <Feather name="bell" size={20} color={colors.iconDark} />
+          <Feather name={offline ? 'unlock' : 'lock'} size={20} color={colors.iconDark} />
           <Text style={[styles.text, { fontSize: 16, flex: 1, marginLeft: 20 }]}>
             {offline ? `Close` : `Open`} Store
           </Text>

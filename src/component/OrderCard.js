@@ -3,13 +3,13 @@ import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View, Image } fr
 import colors from '../constants/colors';
 import fonts from '../constants/fonts';
 import { Feather } from '@expo/vector-icons';
-import { emojis, formatDate } from '../constants/utils';
+import { emojis, formatDate, formatPrice } from '../constants/utils';
 
 const styles = StyleSheet.create({
   container: {
     borderRadius: 13,
-    // alignItems: 'center',
-    padding: 15,
+    paddingVertical: 15,
+    paddingHorizontal: 17,
     flexDirection: 'row',
     marginTop: 10,
     borderWidth: 1,
@@ -27,28 +27,36 @@ const styles = StyleSheet.create({
 const OrderCard = ({ onPress, style, emoji, item }) => {
   return (
     <TouchableOpacity onPress={onPress} style={[styles.container, { style }]}>
-      <View
-        style={{
-          height: 40,
-          width: 40,
-          borderRadius: 50,
-          marginTop: 5,
-          borderColor: colors.primary,
-          borderWidth: 1.25,
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginRight: 15,
-          backgroundColor: colors.lightGreen,
-        }}>
-        <Image source={{ uri: emoji }} style={{ height: 20, width: 20 }} />
-      </View>
       <View style={{ flex: 1 }}>
-        <View
-          style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Text style={[styles.text, { flex: 1, textTransform: 'none' }]} numberOfLines={1}>
-            #{item.order_id}: {item.basket[0].vegetable_name}
-            {item.basket.length > 1 && ', ...'}
-          </Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.text, { textTransform: 'none', marginRight: 10 }]}>
+              Order #{item.order_id}
+            </Text>
+            {item.basket.map((item, index) => {
+              return (
+                <View
+                  key={index}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginTop: 5,
+                  }}>
+                  <View
+                    style={{
+                      height: 10,
+                      width: 10,
+                      borderRadius: 3,
+                      backgroundColor: colors.lightGreen,
+                    }}
+                  />
+                  <Text style={[styles.text, { fontSize: 15, marginLeft: 7 }]}>
+                    {item.vegetable_name} - {item.quantity} {item.unit_short}
+                  </Text>
+                </View>
+              );
+            })}
+          </View>
           <Text
             style={[
               styles.text,
@@ -57,24 +65,43 @@ const OrderCard = ({ onPress, style, emoji, item }) => {
             {formatDate(item.placed_on)}
           </Text>
         </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5 }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginTop: 10,
+            borderTopColor: colors.backgroundGrey,
+            borderTopWidth: 1,
+            paddingTop: 5,
+          }}>
           <View
             style={{
               flex: 1,
             }}>
-            <Text style={[styles.text, { fontSize: 14, color: colors.textGrey }]}>Status</Text>
-            <Text style={[styles.text, { fontSize: 14, color: colors.orange }]}>
-              {item.order_status == 1 ? 'Pending' : item.order_status == 2 ? 'Processing' : null}
+            <Text style={[styles.text, { fontSize: 14, color: colors.textGrey }]}>
+              Order Destination
+            </Text>
+            <Text style={[styles.text, { fontSize: 14, color: colors.textDark }]}>
+              {item.delivery_address}
             </Text>
           </View>
           <View
             style={{
               alignItems: 'flex-end',
             }}>
-            <Text style={[styles.text, { fontSize: 14, color: colors.textGrey }]}>
-              Est. Arrival
+            <Text style={[styles.text, { fontSize: 14, color: colors.textGrey }]}>Total Paid</Text>
+            <Text
+              style={[
+                styles.text,
+                {
+                  fontSize: 14,
+                  fontFamily: fonts.bold,
+                  textTransform: 'uppercase',
+                  color: colors.orange,
+                },
+              ]}>
+              RWF {formatPrice(item.paid_amount)}
             </Text>
-            <Text style={[styles.text, { fontSize: 14, color: colors.textDark }]}>30 min.</Text>
           </View>
         </View>
       </View>

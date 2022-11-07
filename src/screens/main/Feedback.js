@@ -51,6 +51,10 @@ function Feedback({ route, navigation }) {
   const [message, setMessage] = useState(null);
   const [location, setLocation] = useState([]);
 
+  useEffect(() => {
+    handleGet;
+  }, []);
+
   return (
     <AppScreen style={{ backgroundColor: colors.white, flex: 1 }}>
       {message && <ToastMessage label={message} onPress={() => setMessage(null)} />}

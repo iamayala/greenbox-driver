@@ -66,13 +66,11 @@ function Notification({ route, navigation }) {
           paddingHorizontal: 15,
           backgroundColor: colors.white,
         }}>
-        <Text style={[styles.text, { fontSize: 18 }]}>Notifications</Text>
+        <Text style={[styles.text, { fontSize: 18 }]}>Deliveries</Text>
       </View>
       <View style={{ flexDirection: 'row', marginHorizontal: 12 }}>
-        <Tab label="All" active={tab == 1} onPress={() => settab(1)} />
-        <Tab label="Orders" active={tab == 2} onPress={() => settab(2)} />
-        <Tab label="Feedbacks" active={tab == 3} onPress={() => settab(3)} />
-        <Tab label="Updates" active={tab == 4} onPress={() => settab(4)} />
+        <Tab label="Activity" active={tab == 1} onPress={() => settab(1)} />
+        <Tab label="History" active={tab == 2} onPress={() => settab(2)} />
       </View>
       <View style={{ marginBottom: 10, flex: 1 }}>
         <FlatList

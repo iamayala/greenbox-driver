@@ -137,7 +137,7 @@ function Account({ navigation }) {
         <View style={styles.itemContainer}>
           <Feather name={offline ? 'unlock' : 'lock'} size={20} color={colors.iconDark} />
           <Text style={[styles.text, { fontSize: 16, flex: 1, marginLeft: 20 }]}>
-            {offline ? `Close` : `Open`} Store
+            Go {offline ? `offline` : `online`}
           </Text>
           <Switch
             trackColor={{ false: colors.backgroundGrey, true: colors.backgroundGrey }}
@@ -148,13 +148,18 @@ function Account({ navigation }) {
           />
         </View>
         <AccountItem
-          icon="bar-chart-2"
-          label="analytics"
+          icon="clock"
+          label="History"
           onPress={() => navigation.navigate('Analytics')}
         />
         <AccountItem
+          icon="star"
+          label="ratings"
+          onPress={() => navigation.navigate('Settings', { profile })}
+        />
+        <AccountItem
           icon="credit-card"
-          label="payments"
+          label="Earnings"
           onPress={() => navigation.navigate('Payment')}
         />
         <AccountItem

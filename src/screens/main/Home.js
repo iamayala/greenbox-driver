@@ -138,26 +138,6 @@ export class Home extends Component {
             />
           </View>
         </View>
-        <View style={{ flexDirection: 'row', marginHorizontal: 12, marginTop: 10 }}>
-          <Tab label="Pending" onPress={() => this.setState({ tab: 1 })} active={tab == 1} />
-          <Tab label="In progress" onPress={() => this.setState({ tab: 2 })} active={tab == 2} />
-          <Tab label="Completed" onPress={() => this.setState({ tab: 3 })} active={tab == 3} />
-          <Tab label="Cancelled" onPress={() => this.setState({ tab: 4 })} active={tab == 4} />
-        </View>
-        <View style={{ flex: 1 }}>
-          <FlatList
-            refreshing={loading}
-            onRefresh={() => this.handleFetchOrders()}
-            data={orders.filter((item) => item.order_status == tab)}
-            contentContainerStyle={{ paddingTop: 10 }}
-            renderItem={({ item }) => {
-              return <OrderCard item={item} />;
-            }}
-            ListEmptyComponent={() => {
-              return <NoData emoji={emojis.hide} label="No orders on this tab" />;
-            }}
-          />
-        </View>
       </AppScreen>
     );
   }

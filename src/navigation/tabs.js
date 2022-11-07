@@ -91,25 +91,13 @@ export const MainTabNavigation = ({ navigation, route }) => {
         headerShown: false,
       }}>
       <Tab.Screen
-        name="HomeNavigation"
-        component={HomeStackScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-              <Feather name="home" size={24} color={focused ? colors.primary : colors.textGrey} />
-            </View>
-          ),
-        }}
-      />
-
-      <Tab.Screen
-        name="MenuStackScreen"
-        component={MenuStackScreen}
+        name="NotificationStackScreen"
+        component={NotificationStackScreen}
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
               <Feather
-                name="book-open"
+                name="compass"
                 size={24}
                 color={focused ? colors.primary : colors.textGrey}
               />
@@ -118,36 +106,17 @@ export const MainTabNavigation = ({ navigation, route }) => {
         }}
       />
 
-      {/* 
-      
       <Tab.Screen
-        name="FeedbackStackScreen"
-        component={FeedbackStackScreen}
-        options={({ route }) => ({
-          tabBarIcon: ({ focused }) => (
-            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-              <Feather name="star" size={24} color={focused ? colors.primary : colors.textGrey} />
-            </View>
-          ),
-          tabBarStyle: ((route) => {
-            const routeName = getFocusedRouteNameFromRoute(route) ?? '';
-            if (routeName == 'Checkout') {
-              return { display: 'none' };
-            }
-            return styles.tabBarStyle;
-          })(route),
-        })}
-      /> 
-      
-      */}
-
-      <Tab.Screen
-        name="NotificationStackScreen"
-        component={NotificationStackScreen}
+        name="HomeNavigation"
+        component={HomeStackScreen}
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-              <Feather name="bell" size={24} color={focused ? colors.primary : colors.textGrey} />
+              <Feather
+                name="navigation"
+                size={24}
+                color={focused ? colors.primary : colors.textGrey}
+              />
             </View>
           ),
         }}

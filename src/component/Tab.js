@@ -18,7 +18,6 @@ const styles = StyleSheet.create({
   name: {
     fontFamily: fonts.medium,
     textTransform: 'capitalize',
-    fontSize: 13,
     color: colors.textGrey,
     textAlign: 'center',
   },

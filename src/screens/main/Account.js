@@ -45,7 +45,7 @@ function Account({ navigation }) {
   const [offline, setoffline] = useState(true);
 
   useEffect(() => {
-    getLocalData('@USERDATA').then((res) => {
+    getLocalData('@ADMINDATA').then((res) => {
       setProfile(res[0]);
     });
     addNotification(false);
@@ -112,15 +112,20 @@ function Account({ navigation }) {
             />
           </View>
           <View style={{ marginHorizontal: 15, flex: 1 }}>
-            <Text style={[styles.text, { fontSize: 17, textTransform: 'capitalize' }]}>
-              {profile?.customer_username}
+            <Text style={[styles.text, { fontSize: 18, textTransform: 'capitalize' }]}>
+              {profile?.admin_name}
             </Text>
             <Text
               style={[
                 styles.text,
-                { fontSize: 16, color: colors.textGrey, fontFamily: fonts.regular },
+                {
+                  fontSize: 16,
+                  color: colors.textGrey,
+                  fontFamily: fonts.regular,
+                  textTransform: 'capitalize',
+                },
               ]}>
-              {profile?.customer_phone_number}
+              {profile?.admin_role}
             </Text>
           </View>
           <TouchableOpacity

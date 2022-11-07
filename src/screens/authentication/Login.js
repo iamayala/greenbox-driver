@@ -33,14 +33,12 @@ Notifications.setNotificationHandler({
 });
 
 function Login({ navigation }) {
-  const [phone, setPhone] = useState('');
+  const [name, setname] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [hidepwd, setHidepwd] = useState(true);
   const [expoPushToken, setExpoPushToken] = useState('');
-  const [recovermodal, setrecovermodal] = useState(false);
-  const [temp, settemp] = useState(null);
 
   useEffect(() => {
     registerForPushNotificationsAsync();
@@ -77,34 +75,29 @@ function Login({ navigation }) {
     return token;
   }
 
-  const verifyPhone = (e) => {
-    const dstPhone = e.split('');
-    if (dstPhone.length < 9) {
-      setError('Please make sure the phone number is valid');
-    } else if (dstPhone[0] !== '7') {
-      setError('Please use the right format ex. 7xxxxxxxx');
-    } else {
-      handleLogin();
-    }
-  };
-
   const handleLogin = () => {
     // navigation.navigate('OTP');
+    Keyboard.dismiss();
     setLoading(true);
-    post(`${baseURL}/login`, {
-      customer_phone_number: `+250${phone}`,
-      customer_password: password,
+    post(`${baseURL}/admin/login`, {
+      admin_name: name,
+      admin_password: password,
     })
       .then((res) => {
         if (res.data.status == 404) {
           setError('Wrong credentials. Please try again!');
+          setname('');
+          setPassword('');
           setLoading(false);
         } else if (res.data.status == 200) {
           handleSaveToLocal(res.data.data);
           saveNotificationToken(res.data.data);
         } else if (res.data.status == 204) {
-          setrecovermodal(true);
-          settemp(res.data.data);
+          // setrecovermodal(true);
+          setname('');
+          setPassword('');
+          setError('Oops! Access Permission is no loner valid!');
+          setLoading(false);
         }
       })
       .catch((err) => {
@@ -126,10 +119,12 @@ function Login({ navigation }) {
   };
 
   const handleSaveToLocal = (data) => {
-    storeLocalData('@USERDATA', data)
+    storeLocalData('@ADMINDATA', data)
       .then(() => {
-        navigation.navigate('MainStack');
+        setname('');
+        setPassword('');
         setLoading(false);
+        navigation.navigate('MainStack');
       })
       .catch((err) => {
         setError('Something went wrong! Please try again!');
@@ -167,10 +162,9 @@ function Login({ navigation }) {
               <View style={styled.inputField}>
                 <TextInput
                   style={styled.textInput}
-                  keyboardType="phone-pad"
-                  maxLength={9}
-                  placeholder="Usernmae"
-                  onChangeText={(e) => setPhone(e)}
+                  placeholder="Username"
+                  value={name}
+                  onChangeText={(e) => setname(e)}
                 />
               </View>
             </View>
@@ -182,6 +176,7 @@ function Login({ navigation }) {
                   style={styled.textInput}
                   secureTextEntry={hidepwd}
                   placeholder="Password"
+                  value={password}
                   onChangeText={(e) => setPassword(e)}
                 />
                 <TouchableOpacity onPress={() => setHidepwd(!hidepwd)}>
@@ -191,7 +186,7 @@ function Login({ navigation }) {
             </View>
 
             <View style={{ justifyContent: 'space-between' }}>
-              <TouchableOpacity style={{ marginTop: 10, marginBottom: 15 }}>
+              <TouchableOpacity style={{ marginTop: 10, marginBottom: 15, display: 'none' }}>
                 <Text
                   style={{ fontFamily: fonts.medium, color: colors.textGrey, textAlign: 'right' }}>
                   Forgot Password{' '}
@@ -199,11 +194,9 @@ function Login({ navigation }) {
               </TouchableOpacity>
 
               <AppButton
-                onPress={
-                  phone == '' || password == '' || loading ? () => {} : () => verifyPhone(phone)
-                }
+                onPress={name == '' || password == '' || loading ? () => {} : () => handleLogin()}
                 style={{
-                  backgroundColor: phone == '' || password == '' ? colors.textGrey : colors.primary,
+                  backgroundColor: name == '' || password == '' ? colors.textGrey : colors.primary,
                 }}
                 label="Login"
                 loading={loading}

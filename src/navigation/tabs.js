@@ -118,6 +118,8 @@ export const MainTabNavigation = ({ navigation, route }) => {
         }}
       />
 
+      {/* 
+      
       <Tab.Screen
         name="FeedbackStackScreen"
         component={FeedbackStackScreen}
@@ -135,7 +137,9 @@ export const MainTabNavigation = ({ navigation, route }) => {
             return styles.tabBarStyle;
           })(route),
         })}
-      />
+      /> 
+      
+      */}
 
       <Tab.Screen
         name="NotificationStackScreen"

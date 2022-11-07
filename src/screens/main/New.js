@@ -6,12 +6,8 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
-  FlatList,
-  ActivityIndicator,
   TextInput,
-  KeyboardAvoidingView,
   TouchableWithoutFeedback,
-  Platform,
   Keyboard,
 } from 'react-native';
 import AppScreen from '../../component/AppScreen';
@@ -235,8 +231,8 @@ function New({ route, navigation }) {
               <Text style={[styled.normalText, { marginRight: 10 }]}>RWF</Text>
               <TextInput
                 style={styled.textInput}
-                // keyboardType="numeric"
-                // maxLength={5}
+                keyboardType="numeric"
+                maxLength={6}
                 value={selectedprice}
                 placeholder="0000"
                 onChangeText={(e) => setselectedprice(e)}
@@ -281,7 +277,7 @@ function New({ route, navigation }) {
           </View>
 
           <AppButton
-            label="Post Product"
+            label={item ? `Edit Product` : `Post Product`}
             onPress={
               uploading ||
               name == '' ||

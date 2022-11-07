@@ -154,7 +154,7 @@ function Menu({ route, navigation }) {
           <Feather name="plus" size={18} color={colors.white} />
         </TouchableOpacity>
       </View>
-      <View style={{ height: 55, marginTop: 10 }}>
+      <View style={{ height: 55 }}>
         <FlatList
           data={type}
           horizontal

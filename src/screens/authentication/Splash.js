@@ -15,13 +15,12 @@ const styles = StyleSheet.create({
 
 function Splash({ navigation }) {
   useEffect(() => {
-    getLocalData('@USERDATA').then((res) => {
+    getLocalData('@ADMINDATA').then((res) => {
       console.log(res);
       if (res.length > 0) {
         navigation.navigate('MainStack');
       } else {
-        navigation.navigate('MainStack');
-        // navigation.navigate('Recover');
+        navigation.navigate('Login');
       }
     });
   }, []);
@@ -46,7 +45,7 @@ function Splash({ navigation }) {
           GreenBox
         </Text>
         <View
-          style={{ position: 'absolute', bottom: 10, flexDirection: 'row', alignItems: 'center' }}>
+          style={{ position: 'absolute', bottom: 40, flexDirection: 'row', alignItems: 'center' }}>
           <Text style={styles.signature}>Made with </Text>
           <AntDesign name="heart" size={13} color={colors.danger} />
           {/* <Text style={styles.signature}> by Serge. M</Text> */}

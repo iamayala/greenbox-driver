@@ -5,15 +5,12 @@ import Account from '../screens/main/Account';
 import Login from '../screens/authentication/Login';
 import OTP from '../screens/authentication/OTP';
 import Splash from '../screens/authentication/Splash';
-import Menu from '../screens/main/Menu';
 import Notification from '../screens/main/Notification';
 import Profile from '../screens/main/Profile';
 import Help from '../screens/main/Help';
 import Settings from '../screens/main/Settings';
-import Feedback from '../screens/main/Feedback';
 import Payment from '../screens/main/Payment';
 import Analytics from '../screens/main/Analytics';
-import New from '../screens/main/New';
 
 const Stack = createStackNavigator();
 
@@ -25,30 +22,6 @@ export function HomeStackScreen() {
         gestureEnabled: false,
       }}>
       <Stack.Screen name="Home" component={Home} />
-    </Stack.Navigator>
-  );
-}
-
-export function MenuStackScreen() {
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}>
-      <Stack.Screen name="Menu" component={Menu} />
-      <Stack.Screen name="New" component={New} />
-    </Stack.Navigator>
-  );
-}
-
-export function FeedbackStackScreen() {
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-        gestureEnabled: false,
-      }}>
-      <Stack.Screen name="Feedback" component={Feedback} />
     </Stack.Navigator>
   );
 }

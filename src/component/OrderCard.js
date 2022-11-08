@@ -33,7 +33,7 @@ const OrderCard = ({ onPress, style, emoji, item }) => {
             <Text style={[styles.text, { textTransform: 'none', marginRight: 10 }]}>
               Order #{item.order_id}
             </Text>
-            {item.basket.map((item, index) => {
+            {item.basket?.map((item, index) => {
               return (
                 <View
                   key={index}
@@ -89,7 +89,7 @@ const OrderCard = ({ onPress, style, emoji, item }) => {
             style={{
               alignItems: 'flex-end',
             }}>
-            <Text style={[styles.text, { fontSize: 14, color: colors.textGrey }]}>Total Paid</Text>
+            <Text style={[styles.text, { fontSize: 14, color: colors.textGrey }]}>Date Placed</Text>
             <Text
               style={[
                 styles.text,
@@ -100,7 +100,7 @@ const OrderCard = ({ onPress, style, emoji, item }) => {
                   color: colors.orange,
                 },
               ]}>
-              RWF {formatPrice(item.paid_amount)}
+              {formatDate(item.placed_on)}
             </Text>
           </View>
         </View>

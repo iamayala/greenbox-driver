@@ -27,11 +27,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: 45,
     backgroundColor: colors.danger,
-    width: 90,
     borderRadius: 15,
     justifyContent: 'center',
-    marginHorizontal: 10,
+    marginHorizontal: 5,
     marginBottom: 5,
+    paddingHorizontal: 20,
   },
   bg: {
     position: 'absolute',
@@ -44,20 +44,33 @@ const styles = StyleSheet.create({
   },
 });
 
-function PromptModal({ text, yes, no }) {
+function PromptModal({ title, subtitle, yes, no, emoji, no_text, yes_text }) {
   return (
     <View style={{ flex: 1, justifyContent: 'center' }}>
       <View style={styles.bg}></View>
       <View style={[styles.modal, { marginHorizontal: 20 }]}>
-        <Image source={{ uri: emojis.fireCracker }} style={{ height: 35, width: 35 }} />
-        <Text style={[styles.text, { marginVertical: 15, color: colors.textDark }]}>{text}</Text>
+        <Image source={{ uri: emoji }} style={{ height: 45, width: 45 }} />
+        <Text
+          style={[
+            styles.text,
+            {
+              marginBottom: 5,
+              marginTop: 10,
+              color: colors.textDark,
+              fontSize: 22,
+              fontFamily: fonts.bold,
+            },
+          ]}>
+          {title}
+        </Text>
+        <Text style={[styles.text, { marginBottom: 20, color: colors.textGrey }]}>{subtitle}</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <TouchableOpacity onPress={no} style={styles.btn}>
-            <Text style={styles.text}>No</Text>
+            <Text style={styles.text}>{no_text}</Text>
             <Image source={{ uri: emojis.no }} style={{ height: 18, width: 18, marginLeft: 10 }} />
           </TouchableOpacity>
           <TouchableOpacity onPress={yes} style={[styles.btn, { backgroundColor: colors.primary }]}>
-            <Text style={styles.text}>Yes</Text>
+            <Text style={styles.text}>{yes_text}</Text>
             <Image source={{ uri: emojis.yes }} style={{ height: 18, width: 18, marginLeft: 10 }} />
           </TouchableOpacity>
         </View>

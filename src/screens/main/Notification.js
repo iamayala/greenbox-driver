@@ -1,26 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import {
-  ScrollView,
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-  FlatList,
-} from 'react-native';
+import { View, Text, StyleSheet, FlatList } from 'react-native';
 import AppScreen from '../../component/AppScreen';
 import { Feather } from '@expo/vector-icons';
 import colors from '../../constants/colors';
 import fonts from '../../constants/fonts';
-import AppButton from '../../component/AppButton';
-import { getLocalData, removeLocalData, storeLocalData } from '../../utils/Helpers';
 import ToastMessage from '../../component/ToastMessage';
-import ProductCard from '../../component/ProductCard';
-import AddressItem from '../../component/AddressItem';
-import NotificationItem from '../../component/NotificationItem';
 import NoData from '../../component/NoData';
 import { emojis } from '../../constants/utils';
 import Tab from '../../component/Tab';
+import OrderCard from '../../component/OrderCard';
 
 const styles = StyleSheet.create({
   text: {
@@ -76,9 +64,9 @@ function Notification({ route, navigation }) {
         <FlatList
           refreshing={loading}
           onRefresh={() => {}}
-          data={location}
+          data={[1, 2, 3, 4, 5]}
           renderItem={({ item }) => {
-            return <NotificationItem />;
+            return <OrderCard item={item} />;
           }}
           ListEmptyComponent={() => {
             return (

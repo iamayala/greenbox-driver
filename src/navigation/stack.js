@@ -11,6 +11,7 @@ import Help from '../screens/main/Help';
 import Settings from '../screens/main/Settings';
 import Payment from '../screens/main/Payment';
 import Analytics from '../screens/main/Analytics';
+import Activity from '../screens/main/Activity';
 
 const Stack = createStackNavigator();
 
@@ -32,7 +33,7 @@ export function NotificationStackScreen() {
       screenOptions={{
         headerShown: false,
       }}>
-      <Stack.Screen name="Notification" component={Notification} />
+      <Stack.Screen name="Activity" component={Activity} />
     </Stack.Navigator>
   );
 }

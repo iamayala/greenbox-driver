@@ -84,13 +84,24 @@ export class Home extends Component {
   }
 
   componentDidMount() {
-    getLocalData('@USERDATA').then((res) => {
-      var data = res[0];
-      this.setState({ location: data?.customer_sector });
-    });
+    this.handleFetchProfile();
     this.handleFetchOrders();
     this.fetchLocation();
+    this._unsubscribe = this.props.navigation.addListener('focus', () => {
+      this.handleFetchProfile();
+    });
   }
+
+  componentWillUnmount() {
+    this._unsubscribe();
+  }
+
+  handleFetchProfile = () => {
+    getLocalData('@DRIVERDATA').then((res) => {
+      var data = res[0];
+      this.setState({ offline: data?.offline });
+    });
+  };
 
   handleFetchOrders = () => {
     get(`${baseURL}/orders`)
@@ -125,7 +136,7 @@ export class Home extends Component {
   };
 
   render() {
-    const { error, tab, fetching, offline, orders, loading, region, showModal } = this.state;
+    const { error, orders, fetching, offline, region, showModal } = this.state;
     const { navigation } = this.props;
 
     if (fetching) {
@@ -171,7 +182,7 @@ export class Home extends Component {
                 height: 17,
                 width: 17,
                 borderRadius: 10,
-                backgroundColor: colors.success,
+                backgroundColor: offline ? colors.danger : colors.success,
               }}
             />
           </View>
@@ -187,39 +198,49 @@ export class Home extends Component {
             // image={{ uri: emojis.bell }}
           />
         </MapView>
-        <View
-          style={{
-            bottom: 50,
-            paddingTop: 15,
-            paddingBottom: 25,
-            backgroundColor: colors.white,
-            paddingHorizontal: 15,
-            flexDirection: 'row',
-          }}>
+        {orders.length > 0 && (
           <View
             style={{
-              flex: 1,
+              bottom: 50,
+              paddingTop: 15,
+              paddingBottom: 25,
+              backgroundColor: colors.white,
+              paddingHorizontal: 15,
               flexDirection: 'row',
-              height: 60,
-              alignItems: 'center',
             }}>
-            <Image source={{ uri: emojis.confetti }} style={{ height: 30, width: 30 }} />
-            <View style={{ flex: 1, marginLeft: 15 }}>
-              <Text style={[styles.text, { fontSize: 20 }]}>New order!</Text>
-              <Text
-                style={[
-                  styles.text,
-                  { fontSize: 16, fontFamily: fonts.medium, color: colors.iconGrey },
-                ]}>
-                Destination >> <Text style={{ color: colors.primary }}>Kabeza</Text>
-              </Text>
-            </View>
-            <AppButton
-              label="Start"
-              style={{ flex: 0.4, marginTop: 0, height: 45, borderRadius: 10 }}
+            <FlatList
+              data={orders}
+              renderItem={({ item }) => {
+                return (
+                  <View
+                    style={{
+                      flex: 1,
+                      flexDirection: 'row',
+                      height: 70,
+                      alignItems: 'center',
+                    }}>
+                    <Image source={{ uri: emojis.confetti }} style={{ height: 30, width: 30 }} />
+                    <View style={{ flex: 1, marginLeft: 15 }}>
+                      <Text style={[styles.text, { fontSize: 17 }]}>Order #{item.order_id}</Text>
+                      <Text
+                        style={[
+                          styles.text,
+                          { fontSize: 16, fontFamily: fonts.medium, color: colors.iconGrey },
+                        ]}>
+                        Destination:{' '}
+                        <Text style={{ color: colors.primary }}>{item.delivery_address}</Text>
+                      </Text>
+                    </View>
+                    <AppButton
+                      label="Start"
+                      style={{ paddingHorizontal: 20, marginTop: 0, height: 35, borderRadius: 10 }}
+                    />
+                  </View>
+                );
+              }}
             />
           </View>
-        </View>
+        )}
       </AppScreen>
     );
   }

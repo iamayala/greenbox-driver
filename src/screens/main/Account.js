@@ -7,7 +7,7 @@ import { Feather } from '@expo/vector-icons';
 import colors from '../../constants/colors';
 import fonts from '../../constants/fonts';
 import { emojis } from '../../constants/utils';
-import { baseURL, get } from '../../utils/Api';
+import { baseURL, get, post } from '../../utils/Api';
 import { clearLocalData, getLocalData, storeLocalData } from '../../utils/Helpers';
 import Modal from 'react-native-modal';
 import PromptModal from '../../component/PromptModal';
@@ -42,11 +42,14 @@ function Account({ navigation }) {
   const [profile, setProfile] = useState(null);
   const [logoutmodal, setlogoutmodal] = useState(false);
   const [loading, setloading] = useState(false);
-  const [offline, setoffline] = useState(true);
+  const [offline, setoffline] = useState(false);
 
   useEffect(() => {
-    getLocalData('@ADMINDATA').then((res) => {
+    getLocalData('@DRIVERDATA').then((res) => {
       setProfile(res[0]);
+      if (res[0].admin_status == 1) {
+        setoffline(false);
+      }
     });
     addNotification(false);
   }, []);
@@ -67,6 +70,30 @@ function Account({ navigation }) {
     // console.log(value);
   };
 
+  const handleGoOffline = (data) => {
+    const changes = { ...profile, offline: data };
+    storeLocalData('@DRIVERDATA', [changes])
+      .then(() => {
+        setoffline(data);
+      })
+      .catch((err) => {
+        setError('Something went wrong! Please try again!');
+      });
+  };
+
+  const handleGoOfflineDB = (data) => {
+    post(`${baseURL}/admin/status`, {
+      admin_name: profile.admin_name,
+      admin_status: data ? 1 : 0,
+    })
+      .then(() => {
+        handleGoOffline(data);
+      })
+      .catch((err) => {
+        console.info('Error => ' + err);
+      });
+  };
+
   return (
     <AppScreen style={{ backgroundColor: colors.white, flex: 1 }}>
       <View
@@ -79,12 +106,16 @@ function Account({ navigation }) {
       </View>
       <Modal isVisible={logoutmodal}>
         <PromptModal
-          text="You are about to logout of your account. Please confirm this action."
+          title="Logging... Out :("
+          subtitle="You are about to logout of your account. Please confirm this action."
           yes={() => {
             setlogoutmodal(false);
             handleLogout();
           }}
           no={() => setlogoutmodal(false)}
+          emoji={emojis.fireCracker}
+          no_text="Stay"
+          yes_text="Logout"
         />
       </Modal>
       <ScrollView
@@ -143,25 +174,13 @@ function Account({ navigation }) {
             trackColor={{ false: colors.backgroundGrey, true: colors.backgroundGrey }}
             thumbColor={offline ? colors.primary : colors.secondary}
             ios_backgroundColor={colors.backgroundGrey}
-            onValueChange={() => setoffline(!offline)}
-            value={offline}
+            onValueChange={() => {
+              handleGoOfflineDB(!offline);
+            }}
+            value={!offline}
           />
         </View>
-        <AccountItem
-          icon="clock"
-          label="History"
-          onPress={() => navigation.navigate('Analytics')}
-        />
-        <AccountItem
-          icon="star"
-          label="ratings"
-          onPress={() => navigation.navigate('Settings', { profile })}
-        />
-        <AccountItem
-          icon="credit-card"
-          label="Earnings"
-          onPress={() => navigation.navigate('Payment')}
-        />
+        <AccountItem icon="star" label="ratings" onPress={() => {}} />
         <AccountItem
           icon="settings"
           label="settings"

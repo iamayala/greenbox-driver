@@ -4,6 +4,7 @@ import colors from '../constants/colors';
 import fonts from '../constants/fonts';
 import { Feather } from '@expo/vector-icons';
 import { emojis, formatDate, formatPrice } from '../constants/utils';
+import AppButton from './AppButton';
 
 const styles = StyleSheet.create({
   container: {
@@ -24,9 +25,9 @@ const styles = StyleSheet.create({
   },
 });
 
-const OrderCard = ({ onPress, style, emoji, item }) => {
+const OrderCard = ({ onPress, style, action, item }) => {
   return (
-    <TouchableOpacity onPress={onPress} style={[styles.container, { style }]}>
+    <View style={[styles.container, { style }]}>
       <View style={{ flex: 1 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <View style={{ flex: 1 }}>
@@ -57,13 +58,13 @@ const OrderCard = ({ onPress, style, emoji, item }) => {
               );
             })}
           </View>
-          <Text
-            style={[
-              styles.text,
-              { fontSize: 12, color: colors.textGrey, textTransform: 'capitalize' },
-            ]}>
-            {formatDate(item.placed_on)}
-          </Text>
+          {action && (
+            <AppButton
+              onPress={onPress}
+              label="Start"
+              style={{ height: 33, paddingHorizontal: 15, borderRadius: 8, marginTop: 0 }}
+            />
+          )}
         </View>
         <View
           style={{
@@ -94,9 +95,9 @@ const OrderCard = ({ onPress, style, emoji, item }) => {
               style={[
                 styles.text,
                 {
-                  fontSize: 14,
+                  fontSize: 13,
                   fontFamily: fonts.bold,
-                  textTransform: 'uppercase',
+                  textTransform: 'capitalize',
                   color: colors.orange,
                 },
               ]}>
@@ -105,7 +106,7 @@ const OrderCard = ({ onPress, style, emoji, item }) => {
           </View>
         </View>
       </View>
-    </TouchableOpacity>
+    </View>
   );
 };
 

@@ -39,7 +39,6 @@ const styles = StyleSheet.create({
 function Notification({ route, navigation }) {
   const [message, setMessage] = useState(null);
   const [tab, settab] = useState(1);
-  const [location, setLocation] = useState([]);
   const [loading, setloading] = useState(false);
 
   return (

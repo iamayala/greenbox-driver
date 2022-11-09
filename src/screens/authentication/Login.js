@@ -119,7 +119,7 @@ function Login({ navigation }) {
   };
 
   const handleSaveToLocal = (data) => {
-    storeLocalData('@ADMINDATA', data)
+    storeLocalData('@DRIVERDATA', [{ ...data[0], offline: false }])
       .then(() => {
         setname('');
         setPassword('');
@@ -151,14 +151,14 @@ function Login({ navigation }) {
             keyboardShouldPersistTaps="always">
             <View style={{ height: 200 }} />
             <Text style={styled.header}>
-              <Text style={{ color: colors.primary }}>Vendor</Text> Login
+              <Text style={{ color: colors.primary }}>Driver</Text> Login
             </Text>
             <Text style={[styled.subheader, { marginBottom: 25 }]}>
               Enter your username and password
             </Text>
 
             <View style={{ marginVertical: 10 }}>
-              <Text style={styled.label}>Admin Username</Text>
+              <Text style={styled.label}>Driver Username</Text>
               <View style={styled.inputField}>
                 <TextInput
                   style={styled.textInput}

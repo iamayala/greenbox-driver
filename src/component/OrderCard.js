@@ -2,9 +2,7 @@ import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import colors from '../constants/colors';
 import fonts from '../constants/fonts';
-import { Feather } from '@expo/vector-icons';
-import { emojis, formatDate, formatPrice } from '../constants/utils';
-import AppButton from './AppButton';
+import moment from 'moment';
 
 const styles = StyleSheet.create({
   container: {
@@ -25,15 +23,24 @@ const styles = StyleSheet.create({
   },
 });
 
-const OrderCard = ({ onPress, style, action, item }) => {
+const OrderCard = ({ onPress, style, assigned, item }) => {
   return (
-    <View style={[styles.container, { style }]}>
+    <TouchableOpacity onPress={onPress} style={[styles.container, { style }]}>
       <View style={{ flex: 1 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <View style={{ flex: 1 }}>
-            <Text style={[styles.text, { textTransform: 'none', marginRight: 10 }]}>
-              Order #{item.order_id}
-            </Text>
+            <View style={{ flexDirection: 'row' }}>
+              <Text style={[styles.text, { flex: 1, textTransform: 'none', marginRight: 10 }]}>
+                Order #{item.order_id}
+              </Text>
+              <Text
+                style={[
+                  styles.text,
+                  { textTransform: 'capitalize', color: colors.textGrey, fontSize: 14 },
+                ]}>
+                Assigned By: {assigned?.admin_name}
+              </Text>
+            </View>
             {item.basket?.map((item, index) => {
               return (
                 <View
@@ -58,13 +65,6 @@ const OrderCard = ({ onPress, style, action, item }) => {
               );
             })}
           </View>
-          {action && (
-            <AppButton
-              onPress={onPress}
-              label="Start"
-              style={{ height: 33, paddingHorizontal: 15, borderRadius: 8, marginTop: 0 }}
-            />
-          )}
         </View>
         <View
           style={{
@@ -101,12 +101,12 @@ const OrderCard = ({ onPress, style, action, item }) => {
                   color: colors.orange,
                 },
               ]}>
-              {formatDate(item.placed_on)}
+              {moment(item.placed_on).fromNow()}
             </Text>
           </View>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

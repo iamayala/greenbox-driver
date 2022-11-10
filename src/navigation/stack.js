@@ -12,6 +12,7 @@ import Settings from '../screens/main/Settings';
 import Payment from '../screens/main/Payment';
 import Analytics from '../screens/main/Analytics';
 import Activity from '../screens/main/Activity';
+import Track from '../screens/main/Track';
 
 const Stack = createStackNavigator();
 
@@ -34,6 +35,7 @@ export function NotificationStackScreen() {
         headerShown: false,
       }}>
       <Stack.Screen name="Activity" component={Activity} />
+      <Stack.Screen name="Track" component={Track} />
     </Stack.Navigator>
   );
 }

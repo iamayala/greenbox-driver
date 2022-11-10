@@ -10,6 +10,7 @@ import {
   StyleSheet,
   Switch,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import AppScreen from '../../component/AppScreen';
 import { Feather } from '@expo/vector-icons';
@@ -80,12 +81,13 @@ export class Home extends Component {
         longitudeDelta: 0.05,
       },
       showModal: false,
+      profile: null,
+      refreshing: false,
     };
   }
 
   componentDidMount() {
     this.handleFetchProfile();
-    this.handleFetchOrders();
     this.fetchLocation();
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       this.handleFetchProfile();
@@ -97,21 +99,23 @@ export class Home extends Component {
   }
 
   handleFetchProfile = () => {
+    this.setState({ refreshing: true });
     getLocalData('@DRIVERDATA').then((res) => {
       var data = res[0];
-      this.setState({ offline: data?.offline });
+      this.setState({ offline: data?.offline, profile: data });
+      this.handleFetchOrders(data.admin_id);
     });
   };
 
-  handleFetchOrders = () => {
-    get(`${baseURL}/orders`)
+  handleFetchOrders = (id) => {
+    get(`${baseURL}/order/driver/${id}`)
       .then((res) => {
         if (res.data.status == 200) {
           var result = res.data.data;
           for (const i in result) {
             result[i] = { ...result[i], basket: JSON.parse(result[i].basket) };
           }
-          this.setState({ orders: result });
+          this.setState({ orders: result, refreshing: false });
         }
       })
       .catch(() => {
@@ -136,7 +140,7 @@ export class Home extends Component {
   };
 
   render() {
-    const { error, orders, fetching, offline, region, showModal } = this.state;
+    const { error, orders, fetching, offline, region, showModal, profile, refreshing } = this.state;
     const { navigation } = this.props;
 
     if (fetching) {
@@ -172,7 +176,9 @@ export class Home extends Component {
             paddingHorizontal: 15,
             backgroundColor: colors.white,
           }}>
-          <Text style={[styles.text, { fontSize: 18 }]}>Hello James,</Text>
+          <Text style={[styles.text, { fontSize: 18, textTransform: 'capitalize' }]}>
+            Hello {profile?.admin_name},
+          </Text>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text style={[styles.text, { fontSize: 13, marginRight: 10, color: colors.textGrey }]}>
               Status
@@ -187,6 +193,7 @@ export class Home extends Component {
             />
           </View>
         </View>
+
         <MapView
           region={this.state.region}
           // onRegionChange={this.fetchLocation()}
@@ -198,6 +205,27 @@ export class Home extends Component {
             // image={{ uri: emojis.bell }}
           />
         </MapView>
+
+        <TouchableOpacity
+          onPress={refreshing ? () => {} : () => this.handleFetchProfile()}
+          style={{
+            position: 'absolute',
+            top: 80,
+            height: 49,
+            width: 49,
+            backgroundColor: colors.primary,
+            borderRadius: 14,
+            alignItems: 'center',
+            justifyContent: 'center',
+            right: 15,
+          }}>
+          {refreshing ? (
+            <ActivityIndicator size="small" color={colors.white} />
+          ) : (
+            <Feather name="refresh-ccw" size={20} color={colors.white} />
+          )}
+        </TouchableOpacity>
+
         {orders.length > 0 && (
           <View
             style={{

@@ -16,7 +16,6 @@ const styles = StyleSheet.create({
 function Splash({ navigation }) {
   useEffect(() => {
     getLocalData('@DRIVERDATA').then((res) => {
-      console.log(res);
       if (res.length > 0) {
         navigation.navigate('MainStack');
       } else {

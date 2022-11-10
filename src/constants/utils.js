@@ -68,3 +68,16 @@ export const formatDate = (str) => {
 export const jsonparsed = (string) => {
   return JSON.parse(string);
 };
+
+export const pp = {
+  pp_0: 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/apple/325/mushroom_1f344.png',
+  pp_1: 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/apple/325/grapes_1f347.png',
+  pp_2: 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/apple/325/watermelon_1f349.png',
+  pp_3: 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/apple/325/pineapple_1f34d.png',
+  pp_4: 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/apple/325/mango_1f96d.png',
+  pp_5: 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/apple/325/cherries_1f352.png',
+  pp_6: 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/apple/325/avocado_1f951.png',
+  pp_7: 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/apple/325/ear-of-corn_1f33d.png',
+  pp_8: 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/apple/325/strawberry_1f353.png',
+  pp_9: 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/apple/325/carrot_1f955.png',
+};

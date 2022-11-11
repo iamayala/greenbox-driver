@@ -5,7 +5,6 @@ import Account from '../screens/main/Account';
 import Login from '../screens/authentication/Login';
 import OTP from '../screens/authentication/OTP';
 import Splash from '../screens/authentication/Splash';
-import Notification from '../screens/main/Notification';
 import Profile from '../screens/main/Profile';
 import Help from '../screens/main/Help';
 import Settings from '../screens/main/Settings';
@@ -24,6 +23,7 @@ export function HomeStackScreen() {
         gestureEnabled: false,
       }}>
       <Stack.Screen name="Home" component={Home} />
+      <Stack.Screen name="Track" component={Track} />
     </Stack.Navigator>
   );
 }

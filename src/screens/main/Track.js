@@ -150,7 +150,9 @@ export class Track extends Component {
       order_status,
     })
       .then((res) => {
-        this.setState({ loading: false });
+        var newOrder = this.state.order;
+        this.setState({ loading: false, order: { ...newOrder, order_status: order_status } });
+
         setTimeout(() => {
           this.fetchOrder(this.state.order.order_id);
         }, 1000);
@@ -365,34 +367,22 @@ export class Track extends Component {
             active={order?.order_status == 5 ? true : false}
           />
 
-          {order?.order_status == 2 && (
+          {order?.order_status == 3 && (
             <AppButton
               label="Reached Destination"
               style={{ marginHorizontal: 20, flex: 1, backgroundColor: colors.primary }}
-              onPress={() => this.updateOrderStatus(order?.order_id, 3)}
+              onPress={() => this.updateOrderStatus(order?.order_id, 4)}
               loading={loading}
             />
           )}
 
-          {order?.order_status == 1 && (
-            <View style={{ flexDirection: 'row', marginHorizontal: 13 }}>
-              {order?.order_status < 3 && (
-                <AppButton
-                  label="Cancel Order"
-                  style={{ marginHorizontal: 7, flex: 1, backgroundColor: colors.danger }}
-                  onPress={() => this.updateOrderStatus(order?.order_id, 9)}
-                  loading={loading}
-                />
-              )}
-              {order?.order_status < 5 && (
-                <AppButton
-                  label="Accept Order"
-                  style={{ flex: 1, marginHorizontal: 7 }}
-                  onPress={() => this.acceptOrder(order?.order_id, 2)}
-                  loading={loading}
-                />
-              )}
-            </View>
+          {order?.order_status == 4 && (
+            <AppButton
+              label="Mark As Completed"
+              style={{ marginHorizontal: 20, flex: 1, backgroundColor: colors.primary }}
+              onPress={() => this.updateOrderStatus(order?.order_id, 5)}
+              loading={loading}
+            />
           )}
         </ScrollView>
       </AppScreen>

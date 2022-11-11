@@ -249,7 +249,21 @@ export class Home extends Component {
                     }}>
                     <Image source={{ uri: emojis.confetti }} style={{ height: 30, width: 30 }} />
                     <View style={{ flex: 1, marginLeft: 15 }}>
-                      <Text style={[styles.text, { fontSize: 17 }]}>Order #{item.order_id}</Text>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>
+                        <Text style={[styles.text, { fontSize: 17 }]}>Order #{item.order_id}</Text>
+                        <View
+                          style={{ backgroundColor: colors.warning, marginLeft: 10, padding: 3 }}>
+                          <Text style={[styles.text, { fontSize: 11, color: colors.white }]}>
+                            {item.order_status == 3
+                              ? `Assigned`
+                              : item.order_status == 4
+                              ? `At destination`
+                              : item.order_status == 5
+                              ? `Completed`
+                              : ``}
+                          </Text>
+                        </View>
+                      </View>
                       <Text
                         style={[
                           styles.text,
@@ -260,8 +274,9 @@ export class Home extends Component {
                       </Text>
                     </View>
                     <AppButton
-                      label="Start"
-                      style={{ paddingHorizontal: 20, marginTop: 0, height: 35, borderRadius: 10 }}
+                      label="update"
+                      style={{ paddingHorizontal: 15, marginTop: 0, height: 35, borderRadius: 9 }}
+                      onPress={() => navigation.navigate('Track', { item })}
                     />
                   </View>
                 );

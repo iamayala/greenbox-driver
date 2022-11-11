@@ -115,18 +115,21 @@ export class Activity extends Component {
           <Text style={[styles.text, { fontSize: 18 }]}>Deliveries</Text>
         </View>
         <View style={{ flexDirection: 'row', marginHorizontal: 12 }}>
-          <Tab label="Active" active={tab == 1} onPress={() => this.setState({ tab: 1 })} />
-          <Tab label="Completed" active={tab == 2} onPress={() => this.setState({ tab: 2 })} />
+          <Tab label="Assigned" active={tab == 1} onPress={() => this.setState({ tab: 1 })} />
+          <Tab label="At Destination" active={tab == 2} onPress={() => this.setState({ tab: 2 })} />
+          <Tab label="Completed" active={tab == 3} onPress={() => this.setState({ tab: 3 })} />
         </View>
         <View style={{ marginBottom: 10, flex: 1 }}>
           <FlatList
             refreshing={loading}
-            onRefresh={() => {}}
+            onRefresh={() => this.handleFetchProfile()}
             data={
-              tab == 2
+              tab == 1
+                ? orders.filter((item) => item.order_status == 3)
+                : tab == 2
                 ? orders.filter((item) => item.order_status == 4)
-                : tab == 1
-                ? orders.filter((item) => item.order_status == 2 || item.order_status == 3)
+                : tab == 3
+                ? orders.filter((item) => item.order_status == 5)
                 : orders
             }
             renderItem={({ item }) => {
